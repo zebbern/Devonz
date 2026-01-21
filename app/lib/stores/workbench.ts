@@ -49,9 +49,9 @@ export class WorkbenchStore {
   currentView: WritableAtom<WorkbenchViewType> = import.meta.hot?.data.currentView ?? atom('code');
   unsavedFiles: WritableAtom<Set<string>> = import.meta.hot?.data.unsavedFiles ?? atom(new Set<string>());
 
-  /** The width of the workbench panel in pixels. Default is 50% of viewport. */
+  /** The width of the workbench panel in pixels. Default is 70% of viewport for more code space. */
   workbenchWidth: WritableAtom<number> =
-    import.meta.hot?.data.workbenchWidth ?? atom(typeof window !== 'undefined' ? window.innerWidth * 0.5 : 800);
+    import.meta.hot?.data.workbenchWidth ?? atom(typeof window !== 'undefined' ? window.innerWidth * 0.7 : 1100);
 
   actionAlert: WritableAtom<ActionAlert | undefined> =
     import.meta.hot?.data.actionAlert ?? atom<ActionAlert | undefined>(undefined);
