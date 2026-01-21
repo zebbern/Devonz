@@ -14,6 +14,7 @@ import { useSearchFilter } from '~/lib/hooks/useSearchFilter';
 import { classNames } from '~/utils/classNames';
 import { useStore } from '@nanostores/react';
 import { profileStore } from '~/lib/stores/profile';
+import { sidebarStore } from '~/lib/stores/sidebar';
 
 const menuVariants = {
   closed: {
@@ -67,7 +68,7 @@ export const Menu = () => {
   const { duplicateCurrentChat, exportChat } = useChatHistory();
   const menuRef = useRef<HTMLDivElement>(null);
   const [list, setList] = useState<ChatHistoryItem[]>([]);
-  const [open, setOpen] = useState(false);
+  const open = useStore(sidebarStore.open);
   const [dialogContent, setDialogContent] = useState<DialogContent>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const profile = useStore(profileStore);
@@ -278,30 +279,28 @@ export const Menu = () => {
     }
   }, [open, selectionMode]);
 
+  // Close sidebar when clicking outside
   useEffect(() => {
-    const enterThreshold = 20;
-    const exitThreshold = 20;
+    if (!open) {
+      return undefined;
+    }
 
-    function onMouseMove(event: MouseEvent) {
-      if (isSettingsOpen) {
-        return;
-      }
-
-      if (event.pageX < enterThreshold) {
-        setOpen(true);
-      }
-
-      if (menuRef.current && event.clientX > menuRef.current.getBoundingClientRect().right + exitThreshold) {
-        setOpen(false);
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        sidebarStore.setOpen(false);
       }
     }
 
-    window.addEventListener('mousemove', onMouseMove);
+    // Delay adding listener to prevent immediate close from the toggle click
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 0);
 
     return () => {
-      window.removeEventListener('mousemove', onMouseMove);
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isSettingsOpen]);
+  }, [open]);
 
   const handleDuplicate = async (id: string) => {
     await duplicateCurrentChat(id);
@@ -310,7 +309,7 @@ export const Menu = () => {
 
   const handleSettingsClick = () => {
     setIsSettingsOpen(true);
-    setOpen(false);
+    sidebarStore.setOpen(false);
   };
 
   const handleSettingsClose = () => {
