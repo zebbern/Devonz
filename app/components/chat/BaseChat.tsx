@@ -34,6 +34,7 @@ import { ChatBox } from './ChatBox';
 import type { DesignScheme } from '~/types/design-scheme';
 import type { ElementInfo } from '~/components/workbench/Inspector';
 import LlmErrorAlert from './LLMApiAlert';
+import { ResizeHandle } from '~/components/ui/ResizeHandle';
 
 const TEXTAREA_MIN_HEIGHT = 76;
 
@@ -145,7 +146,15 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
     const [progressAnnotations, setProgressAnnotations] = useState<ProgressAnnotation[]>([]);
     const expoUrl = useStore(expoUrlAtom);
     const showWorkbench = useStore(workbenchStore.showWorkbench);
+    const workbenchWidth = useStore(workbenchStore.workbenchWidth);
     const [qrModalOpen, setQrModalOpen] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
+
+    const handleResize = (deltaX: number) => {
+      // Negative delta means dragging left (making workbench bigger)
+      const newWidth = workbenchWidth - deltaX;
+      workbenchStore.setWorkbenchWidth(newWidth);
+    };
 
     useEffect(() => {
       if (expoUrl) {
@@ -348,10 +357,12 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
         data-chat-visible={showChat}
       >
         <ClientOnly>{() => <Menu />}</ClientOnly>
-        <div className="flex flex-col lg:flex-row overflow-y-auto w-full h-full">
+        <div className="flex flex-row w-full h-full overflow-hidden">
+          {/* Chat Panel */}
           <div
-            className={classNames(styles.Chat, 'flex flex-col flex-grow lg:min-w-[var(--chat-min-width)] h-full transition-[padding] duration-200')}
-            style={{ paddingRight: showWorkbench ? 'var(--workbench-width)' : undefined }}
+            className={classNames(styles.Chat, 'flex flex-col flex-grow min-w-[300px] h-full overflow-hidden', {
+              'select-none': isResizing,
+            })}
           >
             {!chatStarted && (
               <div id="intro" className="mt-[16vh] max-w-2xl mx-auto text-center px-4 lg:px-0">
@@ -494,9 +505,25 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
               </div>
             </div>
           </div>
+
+          {/* Resize Handle - only show when workbench is visible */}
+          {chatStarted && showWorkbench && (
+            <ResizeHandle
+              onResize={handleResize}
+              onResizeStart={() => setIsResizing(true)}
+              onResizeEnd={() => setIsResizing(false)}
+            />
+          )}
+
+          {/* Workbench Panel */}
           <ClientOnly>
             {() => (
-              <Workbench chatStarted={chatStarted} isStreaming={isStreaming} setSelectedElement={setSelectedElement} />
+              <Workbench
+                chatStarted={chatStarted}
+                isStreaming={isStreaming}
+                setSelectedElement={setSelectedElement}
+                width={workbenchWidth}
+              />
             )}
           </ClientOnly>
         </div>
