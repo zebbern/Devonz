@@ -391,19 +391,6 @@ export const Workbench = memo(
               />
               <Slider selected={selectedView} options={sliderOptions} setSelected={setSelectedView} />
 
-              {/* Versions button */}
-              <button
-                onClick={() => setSelectedView('versions')}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm transition-colors ml-2"
-                style={{
-                  background: selectedView === 'versions' ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
-                  color: selectedView === 'versions' ? '#60a5fa' : 'rgba(255,255,255,0.5)',
-                }}
-              >
-                <div className="i-ph:clock-counter-clockwise text-base" />
-                <span>Versions</span>
-              </button>
-
               <div className="ml-auto" />
               {selectedView === 'code' && (
                 <div className="flex overflow-y-auto">
