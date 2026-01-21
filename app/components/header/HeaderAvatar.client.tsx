@@ -85,6 +85,24 @@ export function HeaderAvatar() {
               <div className="i-ph:gear-six w-4 h-4 text-bolt-elements-textSecondary" />
               Settings
             </DropdownMenu.Item>
+
+            <div className="my-1 border-t border-bolt-elements-borderColor" />
+
+            <DropdownMenu.Item
+              className={classNames(
+                'flex items-center gap-2 px-3 py-2',
+                'text-sm text-bolt-elements-textPrimary',
+                'hover:bg-bolt-elements-item-backgroundActive',
+                'cursor-pointer transition-colors',
+                'outline-none',
+              )}
+              onClick={() =>
+                window.open('https://github.com/stackblitz-labs/bolt.diy/issues/new?template=bug_report.yml', '_blank')
+              }
+            >
+              <div className="i-ph:bug w-4 h-4 text-bolt-elements-textSecondary" />
+              Report Bug
+            </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
