@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as RadixDialog from '@radix-ui/react-dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { diffLines } from 'diff';
 import { classNames } from '~/utils/classNames';
 import { Button } from '~/components/ui/Button';
@@ -413,6 +414,23 @@ export const DiffPreviewModal = memo(() => {
                                 exit="closed"
                                 variants={modalVariants}
                             >
+                                {/* Accessibility: Hidden title and description for screen readers */}
+                                <VisuallyHidden.Root asChild>
+                                    <RadixDialog.Title>
+                                        {change.type === 'create'
+                                            ? 'New File'
+                                            : change.type === 'modify'
+                                                ? 'Modified File'
+                                                : 'Deleted File'}
+                                        : {fileName}
+                                    </RadixDialog.Title>
+                                </VisuallyHidden.Root>
+                                <VisuallyHidden.Root asChild>
+                                    <RadixDialog.Description>
+                                        Review the diff for {change.filePath}. Use arrow keys to navigate between changes.
+                                    </RadixDialog.Description>
+                                </VisuallyHidden.Root>
+
                                 {/* Header */}
                                 <div className="flex items-center justify-between px-4 py-3 border-b border-bolt-elements-borderColor bg-bolt-elements-background-depth-2 rounded-t-lg">
                                     <div className="flex items-center gap-3">

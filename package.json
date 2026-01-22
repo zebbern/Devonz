@@ -94,6 +94,7 @@
     "@radix-ui/react-switch": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.4",
+    "@radix-ui/react-visually-hidden": "^1.2.4",
     "@remix-run/cloudflare": "^2.15.2",
     "@remix-run/cloudflare-pages": "^2.15.2",
     "@remix-run/node": "^2.15.2",
