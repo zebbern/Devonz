@@ -132,6 +132,14 @@ export class WorkbenchStore {
     this.actionAlert.set(undefined);
   }
 
+  /**
+   * Interrupt any running terminal process (sends Ctrl+C)
+   * Useful before sending a fix request so the terminal is ready for new commands
+   */
+  interruptTerminal() {
+    this.#terminalStore.boltTerminal.interruptExecution();
+  }
+
   get SupabaseAlert() {
     return this.supabaseAlert;
   }

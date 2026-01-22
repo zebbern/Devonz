@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import type { ActionAlert } from '~/types/actions';
 import { classNames } from '~/utils/classNames';
+import { workbenchStore } from '~/lib/stores/workbench';
+import { resetTerminalErrorDetector } from '~/utils/terminalErrorDetector';
 
 interface Props {
   alert: ActionAlert;
@@ -16,6 +18,23 @@ export default function ChatAlert({ alert, clearAlert, postMessage }: Props) {
   const message = isPreview
     ? 'We encountered an error while running the preview. Would you like Bolt to analyze and help resolve this issue?'
     : 'We encountered an error while running terminal commands. Would you like Bolt to analyze and help resolve this issue?';
+
+  const handleAskBolt = () => {
+    /*
+     * For terminal errors:
+     * 1. Reset error detector so the same error can be caught again after fix
+     * 2. Interrupt any running process (Ctrl+C)
+     * This ensures the terminal is ready when Bolt sends fix commands
+     */
+    if (!isPreview) {
+      resetTerminalErrorDetector();
+      workbenchStore.interruptTerminal();
+    }
+
+    postMessage(
+      `*Fix this ${isPreview ? 'preview' : 'terminal'} error* \n\`\`\`${isPreview ? 'js' : 'sh'}\n${content}\n\`\`\`\n`,
+    );
+  };
 
   return (
     <AnimatePresence>
@@ -69,11 +88,7 @@ export default function ChatAlert({ alert, clearAlert, postMessage }: Props) {
             >
               <div className={classNames(' flex gap-2')}>
                 <button
-                  onClick={() =>
-                    postMessage(
-                      `*Fix this ${isPreview ? 'preview' : 'terminal'} error* \n\`\`\`${isPreview ? 'js' : 'sh'}\n${content}\n\`\`\`\n`,
-                    )
-                  }
+                  onClick={handleAskBolt}
                   className={classNames(
                     `px-2 py-1.5 rounded-md text-sm font-medium`,
                     'bg-bolt-elements-button-primary-background',

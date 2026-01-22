@@ -3,6 +3,7 @@ import type { ITerminal } from '~/types/terminal';
 import { withResolvers } from './promises';
 import { atom } from 'nanostores';
 import { expoUrlAtom } from '~/lib/stores/qrCodeStore';
+import { detectTerminalErrors } from './terminalErrorDetector';
 
 export async function newShellProcess(webcontainer: WebContainer, terminal: ITerminal) {
   const args: string[] = [];
@@ -36,6 +37,13 @@ export async function newShellProcess(webcontainer: WebContainer, terminal: ITer
         }
 
         terminal.write(data);
+
+        // Detect actionable errors in terminal output
+        try {
+          detectTerminalErrors(data);
+        } catch {
+          // Ignore errors in error detection
+        }
 
         // Capture terminal output for debugging
         try {
@@ -160,6 +168,13 @@ export class BoltShell {
           }
 
           terminal.write(data);
+
+          // Detect actionable errors in terminal output
+          try {
+            detectTerminalErrors(data);
+          } catch {
+            // Ignore errors in error detection
+          }
         },
       }),
     );
@@ -204,6 +219,16 @@ export class BoltShell {
       if (buffer.length > 2048) {
         buffer = buffer.slice(-2048);
       }
+    }
+  }
+
+  /**
+   * Interrupt any running process in the terminal by sending Ctrl+C
+   * Useful when user wants to fix an error and terminal needs to be free for new commands
+   */
+  interruptExecution(): void {
+    if (this.#terminal) {
+      this.#terminal.input('\x03');
     }
   }
 
