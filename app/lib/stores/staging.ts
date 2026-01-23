@@ -346,6 +346,17 @@ export function stageChange(
   const state = stagingStore.get();
   const { settings } = state;
 
+  // Debug: Log what's being staged
+  console.log('[STAGING DEBUG] stageChange called:', {
+    filePath: change.filePath,
+    type: change.type,
+    originalContentLength: change.originalContent?.length ?? 0,
+    newContentLength: change.newContent?.length ?? 0,
+    originalContentPreview: change.originalContent?.substring(0, 200) ?? 'null',
+    newContentPreview: change.newContent?.substring(0, 200) ?? 'null',
+    contentMatches: change.originalContent === change.newContent,
+  });
+
   // Check if staging is enabled
   if (!settings.isEnabled) {
     logger.debug(`Staging disabled, skipping: ${change.filePath}`);
@@ -655,6 +666,13 @@ export function getAcceptedChanges(): StagedChange[] {
 }
 
 /**
+ * Get all rejected changes that need to be reverted
+ */
+export function getRejectedChanges(): StagedChange[] {
+  return Object.values(stagingStore.get().changes).filter((change) => change.status === 'rejected');
+}
+
+/**
  * Apply all accepted changes to WebContainer filesystem
  * This actually writes the files - must be called after acceptChange/acceptAllChanges
  *
@@ -720,6 +738,147 @@ export async function applyAcceptedChanges(webcontainer: {
   logger.info(`Applied ${applied.length} changes, ${failed.length} failed`);
 
   return { applied, failed };
+}
+
+/**
+ * Revert all rejected changes by restoring original content to WebContainer filesystem
+ * This actually restores the files - must be called after rejectChange/rejectAllChanges
+ *
+ * @param webcontainer - The WebContainer instance to write files to
+ * @returns Object with arrays of reverted and failed file paths
+ */
+export async function applyRejectedChanges(webcontainer: {
+  fs: {
+    writeFile: (path: string, content: string) => Promise<void>;
+    rm: (path: string, options?: { recursive?: boolean }) => Promise<void>;
+    mkdir: (path: string, options: { recursive: true }) => Promise<string>;
+  };
+}): Promise<{ reverted: string[]; failed: Array<{ path: string; error: string }> }> {
+  const rejected = getRejectedChanges();
+  const reverted: string[] = [];
+  const failed: Array<{ path: string; error: string }> = [];
+
+  logger.info(`Reverting ${rejected.length} rejected changes in WebContainer`);
+
+  for (const change of rejected) {
+    try {
+      /*
+       * Convert absolute path to relative path for WebContainer
+       * Paths like "/home/project/src/file.ts" -> "src/file.ts"
+       */
+      const relativePath = change.filePath.replace(/^\/home\/project\/?/, '');
+
+      if (change.type === 'create') {
+        /*
+         * File was newly created and staged - it was never written to WebContainer
+         * Just remove from staging, no filesystem operation needed
+         */
+        logger.debug(`Removing staged new file from tracking: ${relativePath}`);
+      } else if (change.type === 'delete' && change.originalContent !== null) {
+        // File was deleted - recreate it with original content
+        const pathParts = relativePath.split('/');
+        const dir = pathParts.slice(0, -1).join('/');
+
+        if (dir) {
+          try {
+            await webcontainer.fs.mkdir(dir, { recursive: true });
+          } catch {
+            // Directory might already exist, that's fine
+          }
+        }
+
+        await webcontainer.fs.writeFile(relativePath, change.originalContent);
+        logger.debug(`Restored deleted file: ${relativePath}`);
+      } else if (change.originalContent !== null) {
+        // File was modified - restore original content
+        await webcontainer.fs.writeFile(relativePath, change.originalContent);
+        logger.debug(`Restored original content: ${relativePath}`);
+      }
+
+      reverted.push(change.filePath);
+
+      // Remove the change from staging now that it's reverted
+      removeChange(change.filePath);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      failed.push({ path: change.filePath, error: errorMessage });
+      logger.error(`Failed to revert change: ${change.filePath}`, error);
+
+      // Don't remove failed changes - leave them for retry
+    }
+  }
+
+  logger.info(`Reverted ${reverted.length} changes, ${failed.length} failed`);
+
+  return { reverted, failed };
+}
+
+/**
+ * Revert a single rejected change by restoring original content to WebContainer filesystem
+ *
+ * @param filePath - The file path of the rejected change to revert
+ * @param webcontainer - The WebContainer instance to write files to
+ * @returns Object indicating success or failure
+ */
+export async function applyRejectedChange(
+  filePath: string,
+  webcontainer: {
+    fs: {
+      writeFile: (path: string, content: string) => Promise<void>;
+      rm: (path: string, options?: { recursive?: boolean }) => Promise<void>;
+      mkdir: (path: string, options: { recursive: true }) => Promise<string>;
+    };
+  },
+): Promise<{ success: boolean; error?: string }> {
+  const change = getChangeForFile(filePath);
+
+  if (!change) {
+    return { success: false, error: 'Change not found' };
+  }
+
+  if (change.status !== 'rejected') {
+    return { success: false, error: 'Change is not rejected' };
+  }
+
+  try {
+    const relativePath = change.filePath.replace(/^\/home\/project\/?/, '');
+
+    if (change.type === 'create') {
+      /*
+       * File was newly created and staged - it was never written to WebContainer
+       * Just remove from staging, no filesystem operation needed
+       */
+      logger.debug(`Removing staged new file from tracking: ${relativePath}`);
+    } else if (change.type === 'delete' && change.originalContent !== null) {
+      // File was deleted - recreate it with original content
+      const pathParts = relativePath.split('/');
+      const dir = pathParts.slice(0, -1).join('/');
+
+      if (dir) {
+        try {
+          await webcontainer.fs.mkdir(dir, { recursive: true });
+        } catch {
+          // Directory might already exist
+        }
+      }
+
+      await webcontainer.fs.writeFile(relativePath, change.originalContent);
+      logger.debug(`Restored deleted file: ${relativePath}`);
+    } else if (change.originalContent !== null) {
+      // File was modified - restore original content
+      await webcontainer.fs.writeFile(relativePath, change.originalContent);
+      logger.debug(`Restored original content: ${relativePath}`);
+    }
+
+    removeChange(filePath);
+
+    return { success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Failed to revert change: ${filePath}`, error);
+
+    return { success: false, error: errorMessage };
+  }
 }
 
 /**

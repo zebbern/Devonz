@@ -8,6 +8,7 @@ import { IconButton } from '~/components/ui/IconButton';
 import { webcontainer } from '~/lib/webcontainer';
 import { toast } from 'react-toastify';
 import { workbenchStore } from '~/lib/stores/workbench';
+import { WORK_DIR } from '~/utils/constants';
 import {
   stagingStore,
   pendingCount,
@@ -19,6 +20,10 @@ import {
   acceptAllChanges,
   rejectAllChanges,
   applyAcceptedChanges,
+  applyRejectedChanges,
+  applyRejectedChange,
+  getRejectedChanges,
+  getChangeForFile,
   openDiffModal,
   pendingCommandsList,
   pendingCommandsCount,
@@ -318,6 +323,65 @@ export const StagedChangesPanel = memo(() => {
     }
   }, []);
 
+  // Helper to revert rejected changes to WebContainer
+  const revertChangesToWebContainer = useCallback(async () => {
+    try {
+      // Get rejected changes BEFORE applying (since applyRejectedChanges removes them)
+      const rejectedChanges = getRejectedChanges();
+      console.log('[DEBUG] Rejected changes to revert:', rejectedChanges);
+
+      const wc = await webcontainer;
+      const result = await applyRejectedChanges(wc);
+      console.log('[DEBUG] applyRejectedChanges result:', result);
+
+      // Also update the filesStore for each successfully reverted file
+      for (const filePath of result.reverted) {
+        // Find the change in our pre-fetched list
+        const change = rejectedChanges.find((c) => c.filePath === filePath);
+        console.log('[DEBUG] Processing reverted file:', filePath, 'change:', change);
+
+        /*
+         * Convert relative path (from staging store) to absolute path (for filesStore)
+         * Staging uses paths like "src/components/Hero.tsx"
+         * FilesStore uses paths like "/home/project/src/components/Hero.tsx"
+         */
+        const absolutePath = filePath.startsWith(WORK_DIR) ? filePath : `${WORK_DIR}/${filePath}`;
+        console.log('[DEBUG] Using absolutePath for filesStore:', absolutePath);
+
+        if (change && change.type === 'modify' && change.originalContent !== null) {
+          // Update filesStore with original content
+          console.log('[DEBUG] Updating filesStore for modify:', absolutePath, 'original:', change.originalContent.substring(0, 100));
+          workbenchStore.files.setKey(absolutePath, {
+            type: 'file',
+            content: change.originalContent,
+            isBinary: false,
+          });
+        } else if (change && change.type === 'delete' && change.originalContent !== null) {
+          // File was deleted, restore it to filesStore
+          console.log('[DEBUG] Updating filesStore for delete:', absolutePath);
+          workbenchStore.files.setKey(absolutePath, {
+            type: 'file',
+            content: change.originalContent,
+            isBinary: false,
+          });
+        } else if (change && change.type === 'create') {
+          // File was created, remove from filesStore
+          console.log('[DEBUG] Updating filesStore for create (remove):', absolutePath);
+          workbenchStore.files.setKey(absolutePath, undefined);
+        }
+      }
+
+      if (result.failed.length > 0) {
+        toast.error(`Failed to revert ${result.failed.length} file(s)`);
+      } else if (result.reverted.length > 0) {
+        toast.success(`Reverted ${result.reverted.length} file(s)`);
+      }
+    } catch (error) {
+      console.error('Error reverting changes:', error);
+      toast.error('Failed to revert changes');
+    }
+  }, []);
+
   // All hooks must be called unconditionally - moved before any returns
   const handleAccept = useCallback(
     async (filePath: string) => {
@@ -333,9 +397,57 @@ export const StagedChangesPanel = memo(() => {
     [applyChangesToWebContainer],
   );
 
-  const handleReject = useCallback((filePath: string) => {
-    rejectChange(filePath);
-  }, []);
+  const handleReject = useCallback(
+    async (filePath: string) => {
+      setIsApplying(true);
+
+      try {
+        // Get the change BEFORE rejecting (since it modifies the status)
+        const change = getChangeForFile(filePath);
+
+        rejectChange(filePath);
+
+        const wc = await webcontainer;
+        const result = await applyRejectedChange(filePath, wc);
+
+        if (!result.success) {
+          toast.error(`Failed to revert: ${result.error}`);
+        } else {
+          /*
+           * Convert relative path (from staging store) to absolute path (for filesStore)
+           * Staging uses paths like "src/components/Hero.tsx"
+           * FilesStore uses paths like "/home/project/src/components/Hero.tsx"
+           */
+          const absolutePath = filePath.startsWith(WORK_DIR) ? filePath : `${WORK_DIR}/${filePath}`;
+
+          // Also update filesStore
+          if (change && change.type === 'modify' && change.originalContent !== null) {
+            workbenchStore.files.setKey(absolutePath, {
+              type: 'file',
+              content: change.originalContent,
+              isBinary: false,
+            });
+          } else if (change && change.type === 'delete' && change.originalContent !== null) {
+            workbenchStore.files.setKey(absolutePath, {
+              type: 'file',
+              content: change.originalContent,
+              isBinary: false,
+            });
+          } else if (change && change.type === 'create') {
+            workbenchStore.files.setKey(absolutePath, undefined);
+          }
+
+          toast.success('Change reverted');
+        }
+      } catch (error) {
+        console.error('Error reverting change:', error);
+        toast.error('Failed to revert change');
+      } finally {
+        setIsApplying(false);
+      }
+    },
+    [],
+  );
 
   const handlePreview = useCallback((filePath: string) => {
     openDiffModal(filePath);
@@ -355,10 +467,17 @@ export const StagedChangesPanel = memo(() => {
     }
   }, [applyChangesToWebContainer, executePendingCommands]);
 
-  const handleRejectAll = useCallback(() => {
-    rejectAllChanges();
-    clearPendingCommands();
-  }, []);
+  const handleRejectAll = useCallback(async () => {
+    setIsApplying(true);
+
+    try {
+      rejectAllChanges();
+      await revertChangesToWebContainer();
+      clearPendingCommands();
+    } finally {
+      setIsApplying(false);
+    }
+  }, [revertChangesToWebContainer]);
 
   // Don't render if staging is disabled or no pending changes/commands
   if (!settings.isEnabled || (!hasPending && !hasCmds)) {

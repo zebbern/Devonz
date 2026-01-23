@@ -10,6 +10,7 @@ import { FilesStore, type FileMap } from './files';
 import { PreviewsStore } from './previews';
 import { TerminalStore } from './terminal';
 import { autoSwitchToFileStore } from './settings';
+import { stagingStore } from './staging';
 import JSZip from 'jszip';
 import fileSaver from 'file-saver';
 import { Octokit, type RestEndpointMethodTypes } from '@octokit/rest';
@@ -667,7 +668,14 @@ export class WorkbenchStore {
 
       this.#editorStore.updateFile(fullPath, data.action.content);
 
-      if (!isStreaming && data.action.content) {
+      // CRITICAL: When staging is enabled, do NOT save to WebContainer here!
+      // The action-runner will stage the change, and WebContainer write happens on Accept.
+      // If we save here, the original content will be overwritten BEFORE staging captures it,
+      // causing Bug 1 (Reject All doesn't work) and Bug 2 (diff shows +0 -0).
+      const stagingState = stagingStore.get();
+      const isStagingEnabled = stagingState.settings.isEnabled;
+
+      if (!isStreaming && data.action.content && !isStagingEnabled) {
         await this.saveFile(fullPath);
       }
 
