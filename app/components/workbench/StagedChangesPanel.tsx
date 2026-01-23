@@ -278,7 +278,19 @@ export const StagedChangesPanel = memo(() => {
         for (const cmd of commands) {
             try {
                 console.log(`Executing ${cmd.type} command: ${cmd.command}`);
-                await shell.executeCommand(`staged-${cmd.id}`, cmd.command);
+
+                if (cmd.type === 'start') {
+                    /*
+                     * Start commands (like 'npm run dev') are long-running processes
+                     * Don't await them - just fire and forget
+                     */
+                    shell.executeCommand(`staged-${cmd.id}`, cmd.command).catch((error) => {
+                        console.error(`Start command failed: ${cmd.command}`, error);
+                    });
+                } else {
+                    // Shell commands (like 'npm install') should be awaited
+                    await shell.executeCommand(`staged-${cmd.id}`, cmd.command);
+                }
             } catch (error) {
                 console.error(`Failed to execute command: ${cmd.command}`, error);
                 toast.error(`Command failed: ${cmd.command.substring(0, 30)}...`);

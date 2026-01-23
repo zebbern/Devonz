@@ -59,9 +59,12 @@ export class EnhancedStreamingMessageParser extends StreamingMessageParser {
 
       if (enhancedInput !== input) {
         // Reset and reparse with enhanced input
+        logger.debug('Detected code blocks to wrap, resetting parser for message:', messageId);
+        logger.debug('Input length:', input.length, 'Enhanced input length:', enhancedInput.length);
         this._lastResetOccurred = true;
         this.reset();
         output = super.parse(messageId, enhancedInput);
+        logger.debug('After reset, output length:', output.length, 'resetFlag:', this._lastResetOccurred);
       }
     }
 
