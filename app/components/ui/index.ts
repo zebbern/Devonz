@@ -39,3 +39,8 @@ export { Tooltip } from './Tooltip';
 
 // Resize components
 export * from './ResizeHandle';
+
+// Spline Asset components
+export * from './SplineAssetCard';
+export * from './SplineAssetPicker';
+export * from './SplineAssetDialog';

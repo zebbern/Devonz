@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogTitle, DialogDescription, DialogRoot } from './Dialog';
 import { Button } from './Button';
 import { IconButton } from './IconButton';
 import type { DesignScheme } from '~/types/design-scheme';
 import { defaultDesignScheme, designFeatures, designFonts, paletteRoles } from '~/types/design-scheme';
+import { SplineAssetPicker } from './SplineAssetPicker';
+import type { SplineAsset } from '~/lib/assets';
 
 export interface ColorSchemeDialogProps {
   designScheme?: DesignScheme;
@@ -22,7 +24,8 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
   const [features, setFeatures] = useState<string[]>(designScheme?.features || defaultDesignScheme.features);
   const [font, setFont] = useState<string[]>(designScheme?.font || defaultDesignScheme.font);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<'colors' | 'typography' | 'features'>('colors');
+  const [activeSection, setActiveSection] = useState<'colors' | 'typography' | 'features' | '3d-assets'>('colors');
+  const [selectedSplineAsset, setSelectedSplineAsset] = useState<SplineAsset | null>(null);
 
   useEffect(() => {
     if (designScheme) {
@@ -47,6 +50,16 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
   const handleFontToggle = (key: string) => {
     setFont((prev) => (prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key]));
   };
+
+  const handleSplineAssetSelect = useCallback((asset: SplineAsset) => {
+    setSelectedSplineAsset(asset);
+  }, []);
+
+  const handleCopySplineUrl = useCallback(() => {
+    if (selectedSplineAsset) {
+      navigator.clipboard.writeText(selectedSplineAsset.sceneUrl);
+    }
+  }, [selectedSplineAsset]);
 
   const handleSave = () => {
     setDesignScheme?.({ palette, features, font });
@@ -130,25 +143,22 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
             key={f.key}
             type="button"
             onClick={() => handleFontToggle(f.key)}
-            className={`group p-4 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-bolt-elements-borderColorActive ${
-              font.includes(f.key)
+            className={`group p-4 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-bolt-elements-borderColorActive ${font.includes(f.key)
                 ? 'bg-bolt-elements-item-backgroundAccent border-bolt-elements-borderColorActive shadow-lg'
                 : 'bg-bolt-elements-background-depth-3 border-bolt-elements-borderColor hover:border-bolt-elements-borderColorActive hover:bg-bolt-elements-bg-depth-2'
-            }`}
+              }`}
           >
             <div className="text-center space-y-2">
               <div
-                className={`text-2xl font-medium transition-colors ${
-                  font.includes(f.key) ? 'text-bolt-elements-item-contentAccent' : 'text-bolt-elements-textPrimary'
-                }`}
+                className={`text-2xl font-medium transition-colors ${font.includes(f.key) ? 'text-bolt-elements-item-contentAccent' : 'text-bolt-elements-textPrimary'
+                  }`}
                 style={{ fontFamily: f.key }}
               >
                 {f.preview}
               </div>
               <div
-                className={`text-sm font-medium transition-colors ${
-                  font.includes(f.key) ? 'text-bolt-elements-item-contentAccent' : 'text-bolt-elements-textSecondary'
-                }`}
+                className={`text-sm font-medium transition-colors ${font.includes(f.key) ? 'text-bolt-elements-item-contentAccent' : 'text-bolt-elements-textSecondary'
+                  }`}
               >
                 {f.label}
               </div>
@@ -180,16 +190,14 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
               <button
                 type="button"
                 onClick={() => handleFeatureToggle(f.key)}
-                className={`group relative w-full p-6 text-sm font-medium transition-all duration-200 bg-bolt-elements-background-depth-3 text-bolt-elements-item-textSecondary ${
-                  f.key === 'rounded'
+                className={`group relative w-full p-6 text-sm font-medium transition-all duration-200 bg-bolt-elements-background-depth-3 text-bolt-elements-item-textSecondary ${f.key === 'rounded'
                     ? isSelected
                       ? 'rounded-3xl'
                       : 'rounded-xl'
                     : f.key === 'border'
                       ? 'rounded-lg'
                       : 'rounded-xl'
-                } ${
-                  f.key === 'border'
+                  } ${f.key === 'border'
                     ? isSelected
                       ? 'border-3 border-bolt-elements-borderColorActive bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent'
                       : 'border-2 border-bolt-elements-borderColor hover:border-bolt-elements-borderColorActive text-bolt-elements-textSecondary'
@@ -198,7 +206,7 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
                       : isSelected
                         ? 'bg-bolt-elements-item-backgroundAccent text-bolt-elements-item-contentAccent shadow-lg'
                         : 'bg-bolt-elements-bg-depth-3 hover:bg-bolt-elements-bg-depth-2 text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary'
-                } ${f.key === 'shadow' ? (isSelected ? 'shadow-xl' : 'shadow-lg') : 'shadow-md'}`}
+                  } ${f.key === 'shadow' ? (isSelected ? 'shadow-xl' : 'shadow-lg') : 'shadow-md'}`}
                 style={{
                   ...(f.key === 'gradient' && {
                     background: isSelected
@@ -212,16 +220,14 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
                   <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-bolt-elements-bg-depth-1 bg-opacity-20">
                     {f.key === 'rounded' && (
                       <div
-                        className={`w-6 h-6 bg-current transition-all duration-200 ${
-                          isSelected ? 'rounded-full' : 'rounded'
-                        } opacity-80`}
+                        className={`w-6 h-6 bg-current transition-all duration-200 ${isSelected ? 'rounded-full' : 'rounded'
+                          } opacity-80`}
                       />
                     )}
                     {f.key === 'border' && (
                       <div
-                        className={`w-6 h-6 rounded-lg transition-all duration-200 ${
-                          isSelected ? 'border-3 border-current opacity-90' : 'border-2 border-current opacity-70'
-                        }`}
+                        className={`w-6 h-6 rounded-lg transition-all duration-200 ${isSelected ? 'border-3 border-current opacity-90' : 'border-2 border-current opacity-70'
+                          }`}
                       />
                     )}
                     {f.key === 'gradient' && (
@@ -230,28 +236,24 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
                     {f.key === 'shadow' && (
                       <div className="relative">
                         <div
-                          className={`w-6 h-6 bg-current rounded-lg transition-all duration-200 ${
-                            isSelected ? 'opacity-90' : 'opacity-70'
-                          }`}
+                          className={`w-6 h-6 bg-current rounded-lg transition-all duration-200 ${isSelected ? 'opacity-90' : 'opacity-70'
+                            }`}
                         />
                         <div
-                          className={`absolute top-1 left-1 w-6 h-6 bg-current rounded-lg transition-all duration-200 ${
-                            isSelected ? 'opacity-40' : 'opacity-30'
-                          }`}
+                          className={`absolute top-1 left-1 w-6 h-6 bg-current rounded-lg transition-all duration-200 ${isSelected ? 'opacity-40' : 'opacity-30'
+                            }`}
                         />
                       </div>
                     )}
                     {f.key === 'frosted-glass' && (
                       <div className="relative">
                         <div
-                          className={`w-6 h-6 rounded-lg transition-all duration-200 backdrop-blur-sm bg-white/20 border border-white/30 ${
-                            isSelected ? 'opacity-90' : 'opacity-70'
-                          }`}
+                          className={`w-6 h-6 rounded-lg transition-all duration-200 backdrop-blur-sm bg-white/20 border border-white/30 ${isSelected ? 'opacity-90' : 'opacity-70'
+                            }`}
                         />
                         <div
-                          className={`absolute inset-0 w-6 h-6 rounded-lg transition-all duration-200 backdrop-blur-md bg-gradient-to-br from-white/10 to-transparent ${
-                            isSelected ? 'opacity-60' : 'opacity-40'
-                          }`}
+                          className={`absolute inset-0 w-6 h-6 rounded-lg transition-all duration-200 backdrop-blur-md bg-gradient-to-br from-white/10 to-transparent ${isSelected ? 'opacity-60' : 'opacity-40'
+                            }`}
                         />
                       </div>
                     )}
@@ -267,6 +269,53 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
           );
         })}
       </div>
+    </div>
+  );
+
+  const render3DAssetsSection = () => (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold text-bolt-elements-textPrimary flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-bolt-elements-item-contentAccent"></div>
+        3D Assets
+      </h3>
+
+      <p className="text-sm text-bolt-elements-textSecondary">
+        Browse and select pre-verified Spline 3D scenes to add to your project. These assets are tested and ready to
+        use.
+      </p>
+
+      <SplineAssetPicker onSelect={handleSplineAssetSelect} selectedAssetId={selectedSplineAsset?.id} compact />
+
+      {selectedSplineAsset && (
+        <div className="p-4 rounded-xl bg-bolt-elements-bg-depth-3 border border-bolt-elements-borderColor">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-bolt-elements-textPrimary">{selectedSplineAsset.name}</h4>
+              <p className="text-sm text-bolt-elements-textSecondary mt-1">{selectedSplineAsset.description}</p>
+              <div className="flex items-center gap-2 mt-2 text-xs text-bolt-elements-textTertiary">
+                {selectedSplineAsset.interactive && (
+                  <span className="flex items-center gap-1 bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">
+                    <span className="i-ph:cursor-click w-3 h-3" /> Interactive
+                  </span>
+                )}
+                <span className="capitalize bg-bolt-elements-bg-depth-1 px-2 py-0.5 rounded-full">
+                  {selectedSplineAsset.category}
+                </span>
+              </div>
+            </div>
+            <Button variant="secondary" onClick={handleCopySplineUrl} className="flex-shrink-0">
+              <span className="i-ph:copy mr-1" />
+              Copy URL
+            </Button>
+          </div>
+          <div className="mt-3 p-2 bg-bolt-elements-bg-depth-1 rounded-lg">
+            <code className="text-xs text-bolt-elements-textSecondary break-all">{selectedSplineAsset.sceneUrl}</code>
+          </div>
+          <p className="text-xs text-bolt-elements-textTertiary mt-2">
+            💡 Tip: Ask Bolt to "add a 3D element using {selectedSplineAsset.name}" and it will use this asset!
+          </p>
+        </div>
+      )}
     </div>
   );
 
@@ -295,15 +344,15 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
                 { key: 'colors', label: 'Colors', icon: 'i-ph:palette' },
                 { key: 'typography', label: 'Typography', icon: 'i-ph:text-aa' },
                 { key: 'features', label: 'Features', icon: 'i-ph:magic-wand' },
+                { key: '3d-assets', label: '3D Assets', icon: 'i-ph:cube' },
               ].map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveSection(tab.key as any)}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
-                    activeSection === tab.key
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${activeSection === tab.key
                       ? 'bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary shadow-md'
                       : 'bg-bolt-elements-background-depth-2 text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary hover:bg-bolt-elements-bg-depth-2'
-                  }`}
+                    }`}
                 >
                   <span className={`${tab.icon} text-lg`} />
                   <span>{tab.label}</span>
@@ -316,12 +365,14 @@ export const ColorSchemeDialog: React.FC<ColorSchemeDialogProps> = ({ setDesignS
               {activeSection === 'colors' && renderColorSection()}
               {activeSection === 'typography' && renderTypographySection()}
               {activeSection === 'features' && renderFeaturesSection()}
+              {activeSection === '3d-assets' && render3DAssetsSection()}
             </div>
 
             {/* Action Buttons */}
             <div className="flex justify-between items-center">
               <div className="text-sm text-bolt-elements-textSecondary">
                 {Object.keys(palette).length} colors • {font.length} fonts • {features.length} features
+                {selectedSplineAsset && ` • 1 3D asset`}
               </div>
               <div className="flex gap-3">
                 <Button variant="secondary" onClick={() => setIsDialogOpen(false)}>

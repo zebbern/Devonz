@@ -36,6 +36,34 @@ export const splineAssets: SplineAsset[] = [
         interactive: true,
         keywords: ['cube', 'box', '3d shape', 'interactive', 'hover effect', 'simple 3d', 'demo'],
     },
+    {
+        id: 'abstract-shapes',
+        name: 'Abstract Shapes',
+        description:
+            'A collection of floating abstract 3D shapes with smooth animations. Perfect for hero sections and backgrounds.',
+        category: 'abstract',
+        sceneUrl: 'https://prod.spline.design/KFonZGtsoUXP-qx7/scene.splinecode',
+        tags: ['abstract', 'shapes', 'floating', 'hero', 'background', 'animated'],
+        verified: true,
+        verifiedDate: '2026-01-23',
+        license: 'CC0',
+        interactive: false,
+        keywords: ['abstract', 'geometric', 'floating', 'hero section', 'background', 'modern', 'minimal'],
+    },
+    {
+        id: '3d-dashboard-hero',
+        name: '3D Dashboard Hero',
+        description:
+            'A sleek 3D scene designed for dashboard hero sections. Modern and professional look with subtle animations.',
+        category: 'ui',
+        sceneUrl: 'https://prod.spline.design/i8eNphGELT2tDQVT/scene.splinecode',
+        tags: ['dashboard', 'hero', 'ui', 'modern', 'professional', 'business'],
+        verified: true,
+        verifiedDate: '2026-01-23',
+        license: 'CC0',
+        interactive: true,
+        keywords: ['dashboard', 'hero section', 'ui design', 'saas', 'startup', 'landing page', 'business'],
+    },
 
     /*
      * Add more assets here as they are verified.
