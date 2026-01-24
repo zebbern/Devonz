@@ -17,6 +17,7 @@ import styles from './BaseChat.module.scss';
 import { LeftActionPanel } from '~/components/chat/LeftActionPanel';
 import { ExamplePrompts } from '~/components/chat/ExamplePrompts';
 import RightIconPanel from './RightIconPanel';
+import { RecentChats } from '~/components/chat/RecentChats';
 import type { ProviderInfo } from '~/types/model';
 import StarterTemplates from './StarterTemplates';
 import type { ActionAlert, SupabaseAlert, DeployAlert, LlmErrorAlertType } from '~/types/actions';
@@ -362,8 +363,10 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
           {/* Chat Panel - hidden when showChat is false and workbench is visible */}
           {showChat && (
             <div
-              className={classNames(styles.Chat, 'flex flex-col flex-grow min-w-[300px] h-full overflow-hidden', {
+              className={classNames(styles.Chat, 'flex flex-col flex-grow min-w-[300px] h-full', {
                 'select-none': isResizing,
+                'overflow-hidden': chatStarted,
+                'overflow-y-auto': !chatStarted,
               })}
             >
               {!chatStarted && (
@@ -526,6 +529,12 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                     handleSendMessage?.(event, messageInput);
                   })}
                 </div>
+              )}
+              {/* Recent Chats - Below Example Prompts */}
+              {!chatStarted && (
+                <ClientOnly>
+                  {() => <RecentChats maxItems={10} />}
+                </ClientOnly>
               )}
             </div>
           )}
