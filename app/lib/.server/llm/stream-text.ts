@@ -219,6 +219,31 @@ export async function streamText(props: {
     console.log('No locked files found from any source for prompt.');
   }
 
+  // PROJECT.md: Persistent project memory - read from project root if exists
+  const projectMemoryPaths = ['/home/project/PROJECT.md', '/home/project/BOLT.md', '/home/project/AGENTS.md'];
+  let projectMemoryContent: string | undefined;
+
+  for (const memoryPath of projectMemoryPaths) {
+    const memoryFile = files?.[memoryPath];
+
+    if (memoryFile?.content && typeof memoryFile.content === 'string' && memoryFile.content.trim().length > 0) {
+      projectMemoryContent = memoryFile.content;
+      logger.info(`Loaded project memory from: ${memoryPath}`);
+      break;
+    }
+  }
+
+  if (projectMemoryContent) {
+    systemPrompt = `${systemPrompt}
+
+<project_memory>
+The following are project-specific instructions from the user's PROJECT.md (or BOLT.md/AGENTS.md) file. You MUST follow these instructions for this project:
+
+${projectMemoryContent}
+</project_memory>
+`;
+  }
+
   logger.info(`Sending llm call to ${provider.name} with model ${modelDetails.name}`);
 
   // Log reasoning model detection and token parameters
@@ -241,19 +266,19 @@ export async function streamText(props: {
   const filteredOptions =
     isReasoning && options
       ? Object.fromEntries(
-          Object.entries(options).filter(
-            ([key]) =>
-              ![
-                'temperature',
-                'topP',
-                'presencePenalty',
-                'frequencyPenalty',
-                'logprobs',
-                'topLogprobs',
-                'logitBias',
-              ].includes(key),
-          ),
-        )
+        Object.entries(options).filter(
+          ([key]) =>
+            ![
+              'temperature',
+              'topP',
+              'presencePenalty',
+              'frequencyPenalty',
+              'logprobs',
+              'topLogprobs',
+              'logitBias',
+            ].includes(key),
+        ),
+      )
       : options || {};
 
   // DEBUG: Log filtered options

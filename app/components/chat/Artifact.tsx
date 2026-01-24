@@ -1,24 +1,32 @@
 import { useStore } from '@nanostores/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { computed } from 'nanostores';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { createHighlighter, type BundledLanguage, type BundledTheme, type HighlighterGeneric } from 'shiki';
 import type { ActionState } from '~/lib/runtime/action-runner';
 import { workbenchStore } from '~/lib/stores/workbench';
+import { stagingStore, getChangeForFile } from '~/lib/stores/staging';
 import { classNames } from '~/utils/classNames';
 import { cubicEasingFn } from '~/utils/easings';
 import { WORK_DIR } from '~/utils/constants';
+import {
+  calculateDiffStats,
+  getFileTypeIcon,
+  getFileTypeIconColor,
+  getSyntaxLanguage,
+  truncateFilePath,
+} from './artifact-utils';
 
 const highlighterOptions = {
-  langs: ['shell'],
+  langs: ['shell', 'typescript', 'javascript', 'tsx', 'jsx', 'css', 'html', 'json', 'markdown', 'python'],
   themes: ['light-plus', 'dark-plus'],
 };
 
-const shellHighlighter: HighlighterGeneric<BundledLanguage, BundledTheme> =
-  import.meta.hot?.data.shellHighlighter ?? (await createHighlighter(highlighterOptions));
+const codeHighlighter: HighlighterGeneric<BundledLanguage, BundledTheme> =
+  import.meta.hot?.data.codeHighlighter ?? (await createHighlighter(highlighterOptions));
 
 if (import.meta.hot) {
-  import.meta.hot.data.shellHighlighter = shellHighlighter;
+  import.meta.hot.data.codeHighlighter = codeHighlighter;
 }
 
 interface ArtifactProps {
@@ -112,40 +120,49 @@ export const Artifact = memo(({ artifactId }: ArtifactProps) => {
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: cubicEasingFn }}
             >
-              {/* To-dos header */}
-              <div
-                className="flex items-center justify-between px-4 py-2.5 border-t border-white/8"
-                style={{ background: 'rgba(0,0,0,0.2)' }}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="i-ph:list-checks text-white/40 text-sm" />
-                  <span className="text-xs text-white/60">To-dos</span>
+              {/* To-dos header with progress bar */}
+              <div className="px-3 py-2 border-t border-bolt-elements-borderColor bg-bolt-elements-background-depth-2">
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <div className="i-ph:list-checks text-bolt-elements-textTertiary text-xs" />
+                    <span className="text-xs text-bolt-elements-textSecondary">To-dos</span>
+                  </div>
+                  <span className="text-xs text-bolt-elements-textTertiary">
+                    {actions.filter((a) => a.status === 'complete').length} of {actions.length} Done
+                  </span>
                 </div>
-                <span className="text-xs text-white/40">
-                  {actions.filter((a) => a.status === 'complete').length} of {actions.length} Done
-                </span>
+                {/* Progress Bar */}
+                <div className="h-0.5 bg-bolt-elements-borderColor rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-green-500"
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${(actions.filter((a) => a.status === 'complete').length / actions.length) * 100}%`,
+                    }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  />
+                </div>
               </div>
 
               {/* Action list */}
-              <div className="px-4 py-3" style={{ background: 'rgba(0,0,0,0.1)' }}>
+              <div className="px-3 py-2 bg-bolt-elements-background-depth-1">
                 <ActionList actions={actions} />
               </div>
 
               {/* Workbench button */}
               <button
-                className="flex items-center gap-3 w-full px-4 py-3 border-t border-white/8 hover:bg-white/5 transition-colors group"
+                className="flex items-center gap-2 w-full px-3 py-2 border-t border-bolt-elements-borderColor hover:bg-bolt-elements-background-depth-3 transition-colors group bg-bolt-elements-background-depth-2"
                 onClick={() => {
                   const showWorkbench = workbenchStore.showWorkbench.get();
                   workbenchStore.showWorkbench.set(!showWorkbench);
                 }}
-                style={{ background: 'rgba(0,0,0,0.15)' }}
               >
-                <div className="i-ph:code-duotone text-blue-400 text-lg" />
+                <div className="i-ph:code-duotone text-bolt-elements-button-primary-background text-base" />
                 <div className="flex-1 text-left">
-                  <div className="text-sm text-white/90">{dynamicTitle}</div>
-                  <div className="text-xs text-white/50">Click to open Workbench</div>
+                  <div className="text-xs text-bolt-elements-textPrimary">{dynamicTitle}</div>
+                  <div className="text-xs text-bolt-elements-textTertiary">Click to open Workbench</div>
                 </div>
-                <div className="i-ph:pencil-simple text-white/40 group-hover:text-white/70 transition-colors" />
+                <div className="i-ph:pencil-simple text-bolt-elements-textTertiary group-hover:text-bolt-elements-textSecondary transition-colors text-xs" />
               </button>
             </motion.div>
           )}
@@ -175,23 +192,43 @@ export const Artifact = memo(({ artifactId }: ArtifactProps) => {
   );
 });
 
-interface ShellCodeBlockProps {
-  classsName?: string;
+interface CodeBlockProps {
+  className?: string;
   code: string;
+  language?: string;
+  maxLines?: number;
 }
 
-function ShellCodeBlock({ classsName, code }: ShellCodeBlockProps) {
+function CodeBlock({ className, code, language = 'shell', maxLines }: CodeBlockProps) {
+  const displayCode = useMemo(() => {
+    if (maxLines && code) {
+      const lines = code.split('\n');
+      if (lines.length > maxLines) {
+        return lines.slice(0, maxLines).join('\n') + `\n... (${lines.length - maxLines} more lines)`;
+      }
+    }
+    return code;
+  }, [code, maxLines]);
+
+  // Ensure language is supported, fallback to plaintext
+  const lang = highlighterOptions.langs.includes(language as any) ? language : 'shell';
+
   return (
     <div
-      className={classNames('text-xs', classsName)}
+      className={classNames('text-xs overflow-x-auto', className)}
       dangerouslySetInnerHTML={{
-        __html: shellHighlighter.codeToHtml(code, {
-          lang: 'shell',
+        __html: codeHighlighter.codeToHtml(displayCode || '', {
+          lang: lang as BundledLanguage,
           theme: 'dark-plus',
         }),
       }}
-    ></div>
+    />
   );
+}
+
+// Keep backward compatibility
+function ShellCodeBlock({ classsName, code }: { classsName?: string; code: string }) {
+  return <CodeBlock className={classsName} code={code} language="shell" />;
 }
 
 interface ActionListProps {
@@ -213,6 +250,7 @@ export function openArtifactInWorkbench(filePath: any) {
 
 const ActionList = memo(({ actions }: ActionListProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const stagingState = useStore(stagingStore);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
@@ -227,15 +265,42 @@ const ActionList = memo(({ actions }: ActionListProps) => {
           // Determine action label and file info
           let actionLabel = '';
           let fileName = '';
+          let fileIcon = '';
+          let fileIconColor = '';
+          let diffStats: { linesAdded: number; linesRemoved: number } | null = null;
+          let fileContent: string | null = null;
+          let syntaxLanguage = 'plaintext';
+          let isModified = false;
 
           if (type === 'file') {
-            actionLabel = 'Create';
-            fileName = action.filePath || '';
+            const filePath = action.filePath || '';
+            fileName = truncateFilePath(filePath);
+            fileIcon = getFileTypeIcon(filePath);
+            fileIconColor = getFileTypeIconColor(filePath);
+            syntaxLanguage = getSyntaxLanguage(filePath);
+
+            // Get diff stats from staging store or action content
+            const stagedChange = getChangeForFile(filePath);
+            if (stagedChange) {
+              diffStats = calculateDiffStats(stagedChange.originalContent, stagedChange.newContent);
+              fileContent = stagedChange.newContent;
+              isModified = stagedChange.type === 'modify';
+              actionLabel = stagedChange.type === 'create' ? 'Create' : 'Edit';
+            } else if (action.content) {
+              // File was directly written (staging disabled or auto-approved)
+              diffStats = { linesAdded: action.content.split('\n').length, linesRemoved: 0 };
+              fileContent = action.content;
+              actionLabel = 'Create';
+            } else {
+              actionLabel = 'Create';
+            }
           } else if (type === 'shell') {
             actionLabel = 'Run command';
           } else if (type === 'start') {
             actionLabel = 'Start Application';
           }
+
+          const hasExpandableContent = (type === 'file' && fileContent) || ((type === 'shell' || type === 'start') && content);
 
           return (
             <motion.div
@@ -245,78 +310,110 @@ const ActionList = memo(({ actions }: ActionListProps) => {
               animate="visible"
               transition={{ duration: 0.2, ease: cubicEasingFn }}
             >
-              {/* Action Card - compact, no background */}
+              {/* Action Card - compact dark theme design */}
               <button
                 onClick={() => {
-                  if (type === 'file') {
-                    openArtifactInWorkbench(action.filePath);
-                  } else if (content) {
+                  if (hasExpandableContent) {
                     setExpandedIndex(isExpanded ? null : index);
+                  } else if (type === 'file') {
+                    openArtifactInWorkbench(action.filePath);
                   }
                 }}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/5 transition-colors"
-                style={{ background: 'transparent' }}
+                className={classNames(
+                  'w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md transition-all duration-150',
+                  'bg-bolt-elements-background-depth-2 hover:bg-bolt-elements-background-depth-3',
+                  isExpanded && 'ring-1 ring-bolt-elements-borderColor',
+                )}
               >
-                {/* Smaller circular outlined checkmark */}
+                {/* Status indicator - small checkmark */}
                 <div
                   className={classNames(
                     'w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0',
                     isComplete
-                      ? 'border border-green-500/80 text-green-500'
+                      ? 'bg-green-500 text-white'
                       : isRunning
-                        ? 'border border-blue-400/80'
+                        ? 'bg-blue-500'
                         : isFailed
-                          ? 'border border-red-500/80 text-red-500'
-                          : 'border border-white/30',
+                          ? 'bg-red-500 text-white'
+                          : 'border border-bolt-elements-borderColor',
                   )}
                 >
                   {isComplete ? (
-                    <div className="i-ph:check" style={{ fontSize: '10px' }} />
+                    <div className="i-ph:check-bold" style={{ fontSize: '10px' }} />
                   ) : isRunning ? (
-                    <div className="i-svg-spinners:ring-resize text-blue-400" style={{ fontSize: '10px' }} />
+                    <div className="i-svg-spinners:ring-resize text-white" style={{ fontSize: '10px' }} />
                   ) : isFailed ? (
-                    <div className="i-ph:x" style={{ fontSize: '10px' }} />
+                    <div className="i-ph:x-bold" style={{ fontSize: '10px' }} />
                   ) : null}
                 </div>
 
-                {/* Action label - smaller */}
-                <span className="text-xs text-white/60">{actionLabel}</span>
+                {/* File type icon (for file actions) */}
+                {type === 'file' && fileIcon && (
+                  <div className={classNames(fileIcon, fileIconColor, 'text-sm flex-shrink-0')} />
+                )}
 
-                {/* File badge - darker, smaller */}
+                {/* Action label */}
+                <span className="text-xs text-bolt-elements-textSecondary flex-shrink-0">{actionLabel}</span>
+
+                {/* File name */}
                 {type === 'file' && fileName && (
-                  <span
-                    className="px-1.5 py-0.5 rounded text-xs font-mono truncate max-w-[180px] text-white/80"
-                    style={{ background: 'rgba(255,255,255,0.08)' }}
-                  >
+                  <span className="text-xs font-medium text-bolt-elements-textPrimary truncate">
                     {fileName}
                   </span>
                 )}
 
-                {/* Expand arrow for shell commands */}
-                {(type === 'shell' || type === 'start') && content && (
+                {/* Edit icon for modified files */}
+                {type === 'file' && isModified && (
+                  <div className="i-ph:pencil-simple text-amber-400/80 text-xs flex-shrink-0" />
+                )}
+
+                {/* Diff stats badge - positioned on the right */}
+                {type === 'file' && diffStats && (diffStats.linesAdded > 0 || diffStats.linesRemoved > 0) && (
+                  <span className="flex items-center gap-1 text-xs ml-auto">
+                    {diffStats.linesAdded > 0 && (
+                      <span className="text-green-400">+{diffStats.linesAdded}</span>
+                    )}
+                    {diffStats.linesRemoved > 0 && (
+                      <span className="text-red-400">-{diffStats.linesRemoved}</span>
+                    )}
+                  </span>
+                )}
+
+                {/* Expand arrow */}
+                {hasExpandableContent && (
                   <div
                     className={classNames(
-                      'ml-auto transition-transform duration-200 text-white/40',
+                      'transition-transform duration-200 text-bolt-elements-textTertiary',
+                      !diffStats && 'ml-auto',
                       isExpanded ? 'rotate-180' : '',
                     )}
                   >
-                    <div className="i-ph:caret-down" style={{ fontSize: '10px' }} />
+                    <div className="i-ph:caret-down" style={{ fontSize: '14px' }} />
                   </div>
                 )}
               </button>
 
               {/* Expandable content */}
               <AnimatePresence>
-                {isExpanded && content && (
+                {isExpanded && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="overflow-hidden ml-8"
+                    className="overflow-hidden"
                   >
-                    <div className="py-2">
-                      <ShellCodeBlock classsName="opacity-80" code={content} />
+                    <div className="mt-1.5 p-2 rounded-md bg-bolt-elements-background-depth-1 border border-bolt-elements-borderColor max-h-[200px] overflow-auto">
+                      {type === 'file' && fileContent ? (
+                        <CodeBlock
+                          code={fileContent}
+                          language={syntaxLanguage}
+                          maxLines={25}
+                          className="opacity-90"
+                        />
+                      ) : (
+                        <ShellCodeBlock classsName="opacity-80" code={content || ''} />
+                      )}
                     </div>
                   </motion.div>
                 )}

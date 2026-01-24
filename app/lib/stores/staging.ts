@@ -47,6 +47,9 @@ export interface StagedChange {
   /** Reference to the action that created this change */
   actionId: string;
 
+  /** ID of the message that created this change - used for rewind on reject */
+  messageId?: string;
+
   /** Whether this change was auto-approved by pattern matching */
   autoApproved?: boolean;
 
@@ -98,6 +101,9 @@ export interface StagingState {
 
   /** Whether preview mode is active (pending files temporarily applied to WebContainer) */
   isPreviewMode: boolean;
+
+  /** Last message ID where changes were accepted - used for rewind on reject */
+  lastAcceptedMessageId: string | null;
 }
 
 /**
@@ -164,6 +170,7 @@ export const stagingStore: MapStore<StagingState> = map<StagingState>({
   settings: loadSettingsFromStorage(),
   pendingCommands: [],
   isPreviewMode: false,
+  lastAcceptedMessageId: null,
 });
 
 /*
@@ -342,6 +349,47 @@ export function matchesAutoApprovePattern(filePath: string, patterns: string[]):
  */
 
 /**
+ * Get the earliest messageId from pending changes
+ * This is used to determine which message to rewind to when rejecting all changes
+ */
+export function getEarliestPendingMessageId(): string | null {
+  const state = stagingStore.get();
+  const pendingChanges = Object.values(state.changes).filter((c) => c.status === 'pending');
+
+  if (pendingChanges.length === 0) {
+    return null;
+  }
+
+  // Sort by timestamp to find the earliest change
+  pendingChanges.sort((a, b) => a.timestamp - b.timestamp);
+
+  // Return the messageId of the earliest pending change
+  const earliest = pendingChanges[0];
+
+  if (earliest.messageId) {
+    return earliest.messageId;
+  }
+
+  return null;
+}
+
+/**
+ * Get the last accepted message ID
+ * This is the message ID to rewind to when rejecting changes
+ */
+export function getLastAcceptedMessageId(): string | null {
+  return stagingStore.get().lastAcceptedMessageId;
+}
+
+/**
+ * Set the last accepted message ID
+ * Called when changes are accepted to track the last good state
+ */
+export function setLastAcceptedMessageId(messageId: string | null): void {
+  stagingStore.setKey('lastAcceptedMessageId', messageId);
+}
+
+/**
  * Stage a new file change
  */
 export function stageChange(
@@ -497,6 +545,7 @@ export function acceptAllChanges(): StagedChange[] {
   const state = stagingStore.get();
   const accepted: StagedChange[] = [];
   const updatedChanges = { ...state.changes };
+  let latestMessageId: string | null = null;
 
   for (const [path, change] of Object.entries(state.changes)) {
     if (change.status === 'pending') {
@@ -506,11 +555,23 @@ export function acceptAllChanges(): StagedChange[] {
       };
       updatedChanges[path] = updatedChange;
       accepted.push(updatedChange);
+
+      // Track the messageId from accepted changes for rewind on future reject
+      if (change.messageId) {
+        latestMessageId = change.messageId;
+      }
     }
   }
 
   if (accepted.length > 0) {
     stagingStore.setKey('changes', updatedChanges);
+
+    // Update lastAcceptedMessageId for potential rewind on reject
+    if (latestMessageId) {
+      stagingStore.setKey('lastAcceptedMessageId', latestMessageId);
+      logger.info(`Updated lastAcceptedMessageId to: ${latestMessageId}`);
+    }
+
     logger.info(`Accepted ${accepted.length} changes`);
   }
 

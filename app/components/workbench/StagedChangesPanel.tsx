@@ -2,6 +2,7 @@ import { memo, useCallback, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as Collapsible from '@radix-ui/react-collapsible';
+import { useLocation, useNavigate } from '@remix-run/react';
 import { classNames } from '~/utils/classNames';
 import { Button } from '~/components/ui/Button';
 import { IconButton } from '~/components/ui/IconButton';
@@ -31,6 +32,8 @@ import {
   clearPendingCommands,
   enterPreviewMode,
   exitPreviewMode,
+  getEarliestPendingMessageId,
+  getLastAcceptedMessageId,
   type StagedChange,
   type ChangeType,
 } from '~/lib/stores/staging';
@@ -256,6 +259,7 @@ ChangeGroup.displayName = 'ChangeGroup';
  */
 
 export const StagedChangesPanel = memo(() => {
+  const location = useLocation();
   const hasPending = useStore(hasPendingChanges);
   const count = useStore(pendingCount);
   const stats = useStore(stagingStats);
@@ -522,6 +526,9 @@ export const StagedChangesPanel = memo(() => {
     setIsApplying(true);
 
     try {
+      // Get the last accepted message ID BEFORE we reject (for rewind)
+      const lastAcceptedId = getLastAcceptedMessageId();
+
       if (isPreviewMode) {
         // Exit preview mode first - this restores original files
         const wc = await webcontainer;
@@ -536,10 +543,29 @@ export const StagedChangesPanel = memo(() => {
       }
 
       clearPendingCommands();
+
+      // Trigger rewind to remove rejected changes from chat history
+      // This ensures the AI won't see the rejected content in subsequent requests
+      if (lastAcceptedId) {
+        toast.info('Rewinding chat to remove rejected changes from history...');
+
+        // Use the same rewind mechanism as "Revert to this message" button
+        const searchParams = new URLSearchParams(location.search);
+        searchParams.set('rewindTo', lastAcceptedId);
+
+        // Short delay to allow toast to show before page reload
+        setTimeout(() => {
+          window.location.search = searchParams.toString();
+        }, 500);
+      } else {
+        // No previous accepted message - this was the first response
+        // Just show a warning that chat history couldn't be cleaned
+        toast.warning('Files reverted. Note: First response cannot be rewound from chat history.');
+      }
     } finally {
       setIsApplying(false);
     }
-  }, [revertChangesToWebContainer, isPreviewMode]);
+  }, [revertChangesToWebContainer, isPreviewMode, location.search]);
 
   // Don't render if staging is disabled or no pending changes/commands
   if (!settings.isEnabled || (!hasPending && !hasCmds)) {

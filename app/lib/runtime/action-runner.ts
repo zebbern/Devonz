@@ -34,6 +34,8 @@ export type BaseActionState = BoltAction & {
   abort: () => void;
   executed: boolean;
   abortSignal: AbortSignal;
+  /** ID of the message that created this action - used for rewind on reject */
+  messageId?: string;
 };
 
 export type FailedActionState = BoltAction &
@@ -107,7 +109,7 @@ export class ActionRunner {
   }
 
   addAction(data: ActionCallbackData) {
-    const { actionId } = data;
+    const { actionId, messageId } = data;
 
     const actions = this.actions.get();
     const action = actions[actionId];
@@ -123,6 +125,7 @@ export class ActionRunner {
       ...data.action,
       status: 'pending',
       executed: false,
+      messageId, // Store messageId for rewind on reject
       abort: () => {
         abortController.abort();
         this.#updateAction(actionId, { status: 'aborted' });
@@ -408,6 +411,7 @@ export class ActionRunner {
         originalContent,
         newContent: action.content,
         actionId: (action as any).id ?? `action-${Date.now()}`,
+        messageId: action.messageId, // Pass messageId for rewind on reject
         description: `${changeType === 'create' ? 'Create' : 'Modify'} ${relativePath}`,
       });
 
