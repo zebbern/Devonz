@@ -305,17 +305,23 @@ export default function LocalProvidersTab() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center ring-1 ring-purple-500/30">
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center"
+              style={{
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2))',
+                boxShadow: '0 0 0 1px rgba(139, 92, 246, 0.3)',
+              }}
+            >
               <Cpu className="w-6 h-6 text-purple-500" />
             </div>
             <div>
-              <h2 className="text-2xl font-semibold text-bolt-elements-textPrimary">Local AI Providers</h2>
-              <p className="text-sm text-bolt-elements-textSecondary">Configure and manage your local AI models</p>
+              <h2 className="text-2xl font-semibold text-white">Local AI Providers</h2>
+              <p className="text-sm text-gray-400">Configure and manage your local AI models</p>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-bolt-elements-textSecondary">Enable All</span>
+              <span className="text-sm font-medium text-gray-400">Enable All</span>
               <Switch
                 checked={categoryEnabled}
                 onCheckedChange={handleToggleCategory}
@@ -323,21 +329,11 @@ export default function LocalProvidersTab() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setViewMode('guide')}
-                className="bg-bolt-elements-background-depth-2 hover:bg-bolt-elements-background-depth-3 border-bolt-elements-borderColor hover:border-purple-500/30 transition-all duration-200 gap-2"
-              >
+              <Button variant="outline" size="sm" onClick={() => setViewMode('guide')} className="gap-2">
                 <BookOpen className="w-4 h-4" />
                 Setup Guide
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setViewMode('status')}
-                className="bg-bolt-elements-background-depth-2 hover:bg-bolt-elements-background-depth-3 border-bolt-elements-borderColor hover:border-purple-500/30 transition-all duration-200 gap-2"
-              >
+              <Button variant="outline" size="sm" onClick={() => setViewMode('status')} className="gap-2">
                 <Activity className="w-4 h-4" />
                 Status
               </Button>
@@ -346,7 +342,7 @@ export default function LocalProvidersTab() {
         </div>
 
         {/* Provider Cards */}
-        <div className="space-y-6">
+        <div className="space-y-4 max-w-4xl mx-auto">
           {filteredProviders.map((provider) => (
             <div key={provider.name} className="space-y-4">
               <ProviderCard
