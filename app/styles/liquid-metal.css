@@ -1,0 +1,135 @@
+/* Liquid Metal 3D Text Effect */
+.liquid-metal-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+  perspective: 1000px;
+}
+
+.liquid-metal-text {
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 900;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  letter-spacing: -0.02em;
+  position: relative;
+  display: inline-block;
+
+  /* Chrome/Metal gradient */
+  background: linear-gradient(
+    135deg,
+    #1e3a5f 0%,
+    #4d6a8f 15%,
+    #8badd4 30%,
+    #ffffff 45%,
+    #8badd4 55%,
+    #4d6a8f 70%,
+    #1e3a5f 85%,
+    #4d6a8f 100%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  /* Animated metallic shine */
+  animation: liquidFlow 8s ease-in-out infinite;
+
+  /* Enhanced 3D depth with more shadow layers */
+  text-shadow:
+    /* Light highlights on top */
+    0 -1px 0 rgba(255, 255, 255, 0.3),
+    /* Main 3D extrusion layers */ 0 1px 0 #6b8bb8,
+    0 2px 0 #5a7aa7,
+    0 3px 0 #4d6a8f,
+    0 4px 0 #3d5a7f,
+    0 5px 0 #2d4a6f,
+    0 6px 0 #1e3a5f,
+    0 7px 0 #1a3355,
+    0 8px 0 #152c4a,
+    /* Soft shadow for depth */ 0 9px 2px rgba(0, 0, 0, 0.1),
+    0 10px 4px rgba(0, 0, 0, 0.1),
+    0 12px 8px rgba(0, 0, 0, 0.15),
+    0 15px 15px rgba(0, 0, 0, 0.15),
+    0 20px 30px rgba(30, 58, 95, 0.3);
+
+  /* Stronger 3D perspective transform */
+  transform-style: preserve-3d;
+  transform: rotateX(8deg) translateZ(0);
+}
+
+/* Animated reflection overlay */
+.liquid-metal-text::before {
+  content: 'Devonz';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  /* Reflection gradient */
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  animation: shine 4s ease-in-out infinite;
+}
+
+/* Liquid morphing animation */
+@keyframes liquidFlow {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: hue-rotate(10deg);
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+}
+
+/* Shine sweep animation */
+@keyframes shine {
+  0% {
+    background-position: -200% 0;
+  }
+  50%,
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .liquid-metal-container {
+    min-height: 120px;
+  }
+
+  .liquid-metal-text {
+    font-size: clamp(3rem, 15vw, 5rem);
+  }
+}

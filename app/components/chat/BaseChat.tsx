@@ -3,7 +3,7 @@
  * Preventing TS checks with files presented in the video for a better presentation.
  */
 import type { JSONValue, Message } from 'ai';
-import React, { type RefCallback, useEffect, useState, lazy, Suspense } from 'react';
+import React, { type RefCallback, useEffect, useState } from 'react';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Menu } from '~/components/sidebar/Menu.client';
 import { Workbench } from '~/components/workbench/Workbench.client';
@@ -29,8 +29,6 @@ import type { ProgressAnnotation } from '~/types/context';
 import { SupabaseChatAlert } from '~/components/chat/SupabaseAlert';
 import { expoUrlAtom } from '~/lib/stores/qrCodeStore';
 
-// Lazy load Spline to avoid SSR issues
-const Spline = lazy(() => import('@splinetool/react-spline'));
 import { workbenchStore } from '~/lib/stores/workbench';
 import { useStore } from '@nanostores/react';
 import { StickToBottom, useStickToBottomContext } from '~/lib/hooks';
@@ -374,27 +372,12 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
             >
               {!chatStarted && (
                 <div id="intro" className="mt-[8vh] max-w-2xl mx-auto text-center px-4 lg:px-0 relative">
-                  {/* Spline 3D Animation Container */}
-                  <div className="relative w-full h-[200px] lg:h-[250px] mb-4">
-                    <ClientOnly>
-                      {() => (
-                        <Suspense
-                          fallback={
-                            <div className="flex items-center justify-center h-full">
-                              <div className="animate-pulse text-[#8badd4]">Loading 3D scene...</div>
-                            </div>
-                          }
-                        >
-                          <Spline
-                            scene="https://prod.spline.design/Nnisc8PVo8Y24LsrYw7fkLGx/scene.splinecode"
-                            style={{ width: '100%', height: '100%' }}
-                          />
-                        </Suspense>
-                      )}
-                    </ClientOnly>
+                  {/* Liquid Metal 3D Text */}
+                  <div className="liquid-metal-container">
+                    <h1 className="liquid-metal-text">Devonz</h1>
                   </div>
 
-                  {/* Subtitle below the Spline animation */}
+                  {/* Subtitle below the 3D text */}
                   <p className="text-base lg:text-lg text-[#8badd4] animate-fade-in animation-delay-200">
                     Build anything with AI. Just describe what you want.
                   </p>

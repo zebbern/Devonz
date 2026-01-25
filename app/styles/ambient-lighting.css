@@ -1,0 +1,94 @@
+/* Simplified Ambient Lighting Background Effect */
+
+/* Container for the entire ambient background */
+.ambient-background {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -10;
+  overflow: hidden;
+  background-color: #0a0a0a;
+}
+
+/* Main spotlight from top center */
+.spotlight-glow {
+  position: absolute;
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 500px;
+  background: radial-gradient(
+    ellipse 50% 50% at center,
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(30, 58, 95, 0.08) 40%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  animation: spotlightPulse 8s ease-in-out infinite;
+}
+
+@keyframes spotlightPulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+/* Subtle particles - just a few */
+.ambient-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(139, 173, 212, 0.5);
+  animation: particleFloat 20s linear infinite;
+  opacity: 0;
+}
+
+.particle:nth-child(1) {
+  left: 15%;
+  animation-delay: 0s;
+}
+.particle:nth-child(2) {
+  left: 35%;
+  animation-delay: 5s;
+}
+.particle:nth-child(3) {
+  left: 55%;
+  animation-delay: 10s;
+}
+.particle:nth-child(4) {
+  left: 75%;
+  animation-delay: 15s;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.6;
+    transform: translateY(90vh) scale(1);
+  }
+  95% {
+    opacity: 0.6;
+    transform: translateY(-10vh) scale(1);
+  }
+  100% {
+    transform: translateY(-20vh) scale(0);
+    opacity: 0;
+  }
+}
