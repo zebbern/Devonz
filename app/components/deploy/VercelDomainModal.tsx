@@ -205,12 +205,14 @@ export function VercelDomainModal({ isOpen, onClose, projectId: propProjectId, c
                       <button
                         onClick={handleAddDomain}
                         disabled={isSaving || !newSubdomain.trim()}
-                        className={classNames(
-                          'px-4 py-2.5 rounded-lg text-sm font-medium transition-all',
-                          isSaving || !newSubdomain.trim()
-                            ? 'opacity-50 cursor-not-allowed bg-[#2a2a2a] text-[#6b7280]'
-                            : 'bg-[#2a2a2a] text-[#ffffff] hover:bg-[#3a3a3a] border border-[#444444] hover:border-[#555555]',
-                        )}
+                        className="px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+                        style={{
+                          backgroundColor: isSaving || !newSubdomain.trim() ? '#2a2a2a' : '#333333',
+                          color: isSaving || !newSubdomain.trim() ? '#6b7280' : '#ffffff',
+                          border: '1px solid #444444',
+                          opacity: isSaving || !newSubdomain.trim() ? 0.5 : 1,
+                          cursor: isSaving || !newSubdomain.trim() ? 'not-allowed' : 'pointer',
+                        }}
                       >
                         {isSaving ? (
                           <span className="flex items-center gap-2">
@@ -249,8 +251,12 @@ export function VercelDomainModal({ isOpen, onClose, projectId: propProjectId, c
                       <button
                         onClick={fetchDomains}
                         disabled={isLoading}
-                        className="text-xs px-2 py-1 rounded hover:bg-[#2a2a2a] transition-colors"
-                        style={{ color: '#9ca3af' }}
+                        className="text-xs px-2 py-1 rounded transition-colors"
+                        style={{
+                          color: '#9ca3af',
+                          backgroundColor: '#2a2a2a',
+                          border: '1px solid #444444',
+                        }}
                       >
                         {isLoading ? (
                           <div className="i-svg-spinners:90-ring-with-bg w-3 h-3" />
@@ -349,8 +355,12 @@ export function VercelDomainModal({ isOpen, onClose, projectId: propProjectId, c
                 <div className="flex justify-end gap-3 px-6 py-4" style={{ borderTop: '1px solid #333333' }}>
                   <button
                     onClick={onClose}
-                    className="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-[#2a2a2a]"
-                    style={{ color: '#9ca3af' }}
+                    className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    style={{
+                      backgroundColor: '#2a2a2a',
+                      color: '#ffffff',
+                      border: '1px solid #444444',
+                    }}
                   >
                     Close
                   </button>
