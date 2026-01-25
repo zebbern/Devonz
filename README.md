@@ -2,7 +2,7 @@
 
 Devonz is an AI-powered development agent that helps you build full-stack applications through natural language conversation. Originally built upon [bolt.diy](https://github.com/stackblitz-labs/bolt.diy), Devonz focuses on speed, efficiency, and a streamlined development experience.
 
-![v2](https://github.com/user-attachments/assets/e4c3067d-2539-4b5e-abab-d129d90b51dc)
+![Devonz Screenshot](https://github.com/user-attachments/assets/e4c3067d-2539-4b5e-abab-d129d90b51dc)
 
 ---
 
@@ -14,7 +14,7 @@ Devonz is an AI-powered development agent that helps you build full-stack applic
 | [Tech Stack](#tech-stack)               | Technologies used in the project   |
 | [Installation](#installation)           | Getting started guide              |
 | [Configuration](#configuration)         | Environment variables and settings |
-| [AI Providers](#supported-ai-providers) | All supported AI providers         |
+| [AI Providers](#supported-ai-providers) | All 19 supported AI providers      |
 | [Project Structure](#project-structure) | Codebase organization              |
 | [Available Scripts](#available-scripts) | Development and build commands     |
 | [Settings](#settings--features)         | App settings and features          |
@@ -26,12 +26,12 @@ Devonz is an AI-powered development agent that helps you build full-stack applic
 
 ### AI-Powered Development
 
-| Feature                      | Description                                                                  |
-| ---------------------------- | ---------------------------------------------------------------------------- |
-| Natural Language Building    | Describe what you want to build, and Devonz creates it                       |
-| Multi-Provider Support       | 19+ AI providers including OpenAI, Anthropic, Google, Groq, Ollama, and more |
-| Model Context Protocol (MCP) | Extend Devonz capabilities with MCP tools                                    |
-| Auto-Fix                     | Automatic error detection and fixing with terminal error detector            |
+| Feature                      | Description                                                                 |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| Natural Language Building    | Describe what you want to build, and Devonz creates it                      |
+| Multi-Provider Support       | 19 AI providers including OpenAI, Anthropic, Google, Groq, Ollama, and more |
+| Model Context Protocol (MCP) | Extend Devonz capabilities with MCP tools                                   |
+| Auto-Fix                     | Automatic error detection and fixing with terminal error detector           |
 
 ### Development Environment
 
@@ -53,11 +53,11 @@ Devonz is an AI-powered development agent that helps you build full-stack applic
 
 ### Integrations
 
-| Integration      | Description                                |
-| ---------------- | ------------------------------------------ |
-| Supabase         | Database and authentication integration    |
-| Git              | Built-in Git support for version control   |
-| Template Gallery | Pre-built templates for popular frameworks |
+| Integration      | Description                                                     |
+| ---------------- | --------------------------------------------------------------- |
+| Supabase         | Database and authentication API routes (requires configuration) |
+| Git              | Built-in Git support for version control                        |
+| Template Gallery | Pre-built templates for popular frameworks                      |
 
 ---
 
@@ -148,21 +148,24 @@ VERCEL_ACCESS_TOKEN=your_vercel_token
 
 ### Cloud Providers
 
-| Provider       | Models                           | Features          |
-| -------------- | -------------------------------- | ----------------- |
-| OpenAI         | GPT-4o, GPT-4 Turbo, GPT-3.5     | Chat, Vision      |
-| Anthropic      | Claude 3.5 Sonnet, Claude 3 Opus | Chat, Vision      |
-| Google         | Gemini Pro, Gemini Ultra         | Chat, Vision      |
-| Groq           | LLaMA 3, Mixtral                 | Fast inference    |
-| OpenRouter     | 100+ models                      | Model aggregation |
-| Mistral        | Mistral Large, Codestral         | Chat, Code        |
-| Cohere         | Command R+                       | Chat, RAG         |
-| Deepseek       | Deepseek Coder                   | Code generation   |
-| Amazon Bedrock | Claude, Titan                    | Enterprise        |
-| Together       | Open source models               | Chat, Code        |
-| Perplexity     | Online models                    | Web search        |
-| HuggingFace    | Open source models               | Community models  |
-| xAI            | Grok                             | Chat              |
+| Provider       | Models                           | Features              |
+| -------------- | -------------------------------- | --------------------- |
+| OpenAI         | GPT-4o, GPT-4 Turbo, GPT-3.5     | Chat, Vision          |
+| Anthropic      | Claude 3.5 Sonnet, Claude 3 Opus | Chat, Vision          |
+| Google         | Gemini Pro, Gemini Ultra         | Chat, Vision          |
+| Groq           | LLaMA 3, Mixtral                 | Fast inference        |
+| OpenRouter     | 100+ models                      | Model aggregation     |
+| Mistral        | Mistral Large, Codestral         | Chat, Code            |
+| Cohere         | Command R+                       | Chat, RAG             |
+| Deepseek       | Deepseek Coder                   | Code generation       |
+| Amazon Bedrock | Claude, Titan                    | Enterprise            |
+| Together       | Open source models               | Chat, Code            |
+| Perplexity     | Online models                    | Web search            |
+| HuggingFace    | Open source models               | Community models      |
+| xAI            | Grok                             | Chat                  |
+| GitHub         | Copilot models                   | GitHub AI             |
+| Hyperbolic     | Various models                   | Specialized inference |
+| Moonshot       | Moonshot models                  | Chinese LLM           |
 
 ### Local Providers
 
@@ -180,9 +183,10 @@ VERCEL_ACCESS_TOKEN=your_vercel_token
 bolt.diy/
 ├── app/
 │   ├── components/         # React components
-│   │   ├── @settings/      # Settings panel components
+│   │   ├── @settings/      # Settings panel (14 tabs)
+│   │   ├── auth/           # Authentication components
 │   │   ├── chat/           # Chat interface
-│   │   ├── deploy/         # Deployment components
+│   │   ├── deploy/         # Deployment (GitHub, GitLab, Netlify, Vercel)
 │   │   ├── editor/         # Code editor
 │   │   ├── git/            # Git integration
 │   │   ├── header/         # App header
@@ -190,18 +194,19 @@ bolt.diy/
 │   │   ├── ui/             # Shared UI components
 │   │   └── workbench/      # Development workbench
 │   ├── lib/                # Core libraries
+│   │   ├── api/            # API utilities
 │   │   ├── hooks/          # React hooks
-│   │   ├── modules/        # Feature modules
+│   │   ├── modules/        # Feature modules (llm with 19 providers)
 │   │   ├── services/       # API services
 │   │   ├── stores/         # State management (nanostores)
 │   │   └── utils/          # Utility functions
-│   ├── routes/             # Remix routes & API endpoints
+│   ├── routes/             # Remix routes (39 API endpoints + pages)
 │   ├── styles/             # Global styles
 │   └── types/              # TypeScript types
-├── electron/               # Electron desktop app
+├── docs/                   # Documentation (mkdocs)
 ├── public/                 # Static assets
 ├── scripts/                # Build scripts
-└── supabase/               # Supabase configuration
+└── supabase/               # Supabase folder (requires configuration)
 ```
 
 ---
@@ -217,7 +222,7 @@ bolt.diy/
 | `pnpm run start`   | Run production build      |
 | `pnpm run preview` | Build and preview locally |
 
-### Testing & Quality
+### Testing and Quality
 
 | Command              | Description              |
 | -------------------- | ------------------------ |
@@ -226,16 +231,6 @@ bolt.diy/
 | `pnpm run typecheck` | TypeScript type checking |
 | `pnpm run lint`      | ESLint check             |
 | `pnpm run lint:fix`  | Auto-fix linting issues  |
-
-### Electron Desktop App
-
-| Command                     | Description                   |
-| --------------------------- | ----------------------------- |
-| `pnpm electron:dev`         | Start Electron in development |
-| `pnpm electron:build:mac`   | Build for macOS               |
-| `pnpm electron:build:win`   | Build for Windows             |
-| `pnpm electron:build:linux` | Build for Linux               |
-| `pnpm electron:build:dist`  | Build for all platforms       |
 
 ### Utilities
 
@@ -246,25 +241,26 @@ bolt.diy/
 
 ---
 
-## Settings & Features
+## Settings and Features
 
 ### Settings Tabs
 
-| Tab            | Description                  |
-| -------------- | ---------------------------- |
-| Profile        | User profile management      |
-| Providers      | AI provider configuration    |
-| Features       | Enable/disable features      |
-| MCP            | Model Context Protocol tools |
-| GitHub         | GitHub integration settings  |
-| GitLab         | GitLab integration settings  |
-| Netlify        | Netlify deployment settings  |
-| Vercel         | Vercel deployment settings   |
-| Supabase       | Database integration         |
-| Event Logs     | Application logs             |
-| Data           | Import/export data           |
-| Notifications  | Notification preferences     |
-| Project Memory | Project context storage      |
+| Tab            | Description                              |
+| -------------- | ---------------------------------------- |
+| Profile        | User profile management                  |
+| Providers      | AI provider configuration (19 providers) |
+| Features       | Enable/disable features                  |
+| MCP            | Model Context Protocol tools             |
+| GitHub         | GitHub integration settings              |
+| GitLab         | GitLab integration settings              |
+| Netlify        | Netlify deployment settings              |
+| Vercel         | Vercel deployment settings               |
+| Supabase       | Database integration settings            |
+| Event Logs     | Application logs                         |
+| Data           | Import/export data                       |
+| Notifications  | Notification preferences                 |
+| Project Memory | Project context storage                  |
+| Settings       | General settings                         |
 
 ### MCP (Model Context Protocol)
 
