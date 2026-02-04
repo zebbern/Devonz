@@ -70,7 +70,7 @@ const StarterTemplates: React.FC = () => {
           onClick={() => scroll('left')}
           className={`absolute left-0 top-1/2 -translate-y-1/2 z-10
             w-8 h-8 flex items-center justify-center
-            bg-[#1a1a1a]/90 backdrop-blur-sm rounded-full
+            bg-[#1a2332]/90 backdrop-blur-sm rounded-full
             border border-bolt-elements-borderColor
             text-bolt-elements-textSecondary hover:text-purple-400
             transition-all duration-300
@@ -111,7 +111,7 @@ const StarterTemplates: React.FC = () => {
           onClick={() => scroll('right')}
           className={`absolute right-0 top-1/2 -translate-y-1/2 z-10
             w-8 h-8 flex items-center justify-center
-            bg-[#1a1a1a]/90 backdrop-blur-sm rounded-full
+            bg-[#1a2332]/90 backdrop-blur-sm rounded-full
             border border-bolt-elements-borderColor
             text-bolt-elements-textSecondary hover:text-purple-400
             transition-all duration-300

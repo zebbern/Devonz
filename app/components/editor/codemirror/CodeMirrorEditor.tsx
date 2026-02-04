@@ -313,7 +313,7 @@ export const CodeMirrorEditor = memo(
     return (
       <div
         className={classNames('relative h-full', className)}
-        style={{ background: 'var(--cm-backgroundColor, #0b0d13)' }}
+        style={{ background: 'var(--cm-backgroundColor, #0d1117)' }}
       >
         {doc?.isBinary && <BinaryContent />}
         <div className="h-full overflow-hidden" ref={containerRef} />

@@ -162,7 +162,7 @@ export const AiQuickActions = ({ selectedElement, onAIAction }: AiQuickActionsPr
           <button
             key={action.id}
             onClick={() => handleAction(action)}
-            className="flex flex-col items-center gap-1 p-2 rounded-lg bg-bolt-elements-background-depth-3 border border-bolt-elements-borderColor hover:border-accent-500/50 hover:bg-bolt-elements-background-depth-4 transition-all group"
+            className="flex flex-col items-center gap-1 p-2 rounded-lg bg-[#2D3748] border border-bolt-elements-borderColor hover:border-accent-500/50 hover:bg-bolt-elements-background-depth-4 transition-all group"
             title={action.description}
           >
             <div

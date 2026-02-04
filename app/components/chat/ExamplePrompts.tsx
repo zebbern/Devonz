@@ -38,7 +38,7 @@ export function ExamplePrompts({ sendMessage }: ExamplePromptsProps) {
   }, []);
 
   const buttonStyle = {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#1a2332',
     color: '#9ca3af',
     border: '1px solid #333333',
   };
@@ -49,7 +49,7 @@ export function ExamplePrompts({ sendMessage }: ExamplePromptsProps) {
   };
 
   const hoverOut = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.backgroundColor = '#1a1a1a';
+    e.currentTarget.style.backgroundColor = '#1a2332';
     e.currentTarget.style.color = '#9ca3af';
   };
 

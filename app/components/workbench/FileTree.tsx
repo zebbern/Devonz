@@ -706,7 +706,7 @@ function File({
           <div className="flex items-center gap-1">
             {showStats && (
               <div className="flex items-center gap-1 text-xs">
-                {additions > 0 && <span className="text-green-500">+{additions}</span>}
+                {additions > 0 && <span className="text-emerald-500">+{additions}</span>}
                 {deletions > 0 && <span className="text-red-500">-{deletions}</span>}
               </div>
             )}

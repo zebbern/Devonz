@@ -30,9 +30,9 @@ export const TabTile = memo(
                   onClick={onClick}
                   className={classNames(
                     'relative flex flex-col items-center justify-center h-full p-4 rounded-lg',
-                    'bg-white dark:bg-[#141414]',
+                    'bg-white dark:bg-[#131a24]',
                     'group cursor-pointer',
-                    'hover:bg-purple-50 dark:hover:bg-[#1a1a1a]',
+                    'hover:bg-purple-50 dark:hover:bg-[#1a2332]',
                     'transition-colors duration-150',
                     isActive ? 'bg-purple-500/5 dark:bg-purple-500/10' : '',
                     isLoading ? 'cursor-wait opacity-70 pointer-events-none' : '',

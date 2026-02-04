@@ -250,11 +250,11 @@ const ToolResultsList = memo(({ toolInvocations, toolCallAnnotations, theme }: T
                   <span className="text-bolt-elements-textPrimary font-semibold">{annotation?.toolDescription}</span>
                 </div>
                 <div className="text-bolt-elements-textSecondary text-xs mb-1">Parameters:</div>
-                <div className="bg-[#FAFAFA] dark:bg-[#0A0A0A] p-3 rounded-md">
+                <div className="bg-[#FAFAFA] dark:bg-[#0b0d13] p-3 rounded-md">
                   <JsonCodeBlock className="mb-0" code={JSON.stringify(tool.toolInvocation.args)} theme={theme} />
                 </div>
                 <div className="text-bolt-elements-textSecondary text-xs mt-3 mb-1">Result:</div>
-                <div className="bg-[#FAFAFA] dark:bg-[#0A0A0A] p-3 rounded-md">
+                <div className="bg-[#FAFAFA] dark:bg-[#0b0d13] p-3 rounded-md">
                   <JsonCodeBlock className="mb-0" code={JSON.stringify(tool.toolInvocation.result)} theme={theme} />
                 </div>
               </div>

@@ -382,7 +382,7 @@ export const CombinedModelSelector = ({
           className={classNames(
             'flex items-stretch rounded-full overflow-hidden cursor-pointer',
             'border border-bolt-elements-borderColor',
-            'bg-[#1a1a1a]',
+            'bg-[#1a2332]',
             'transition-all duration-200',
             'hover:border-[#4d6a8f]',
             isDropdownOpen ? 'ring-2 ring-[#4d6a8f]/50 border-[#4d6a8f]' : '',
@@ -403,7 +403,7 @@ export const CombinedModelSelector = ({
           <div
             className={classNames(
               'flex items-center gap-2 px-4 py-2.5',
-              'bg-[#0f0f0f]',
+              'bg-[#0b0d13]',
               'border-r border-bolt-elements-borderColor/50',
             )}
             onClick={(e) => {
@@ -450,13 +450,13 @@ export const CombinedModelSelector = ({
           className={classNames(
             'z-50 w-full rounded-xl overflow-hidden',
             'border border-bolt-elements-borderColor',
-            'bg-[#0f0f0f]',
+            'bg-[#0b0d13]',
             'shadow-xl shadow-black/50',
             'max-h-[400px] flex flex-col',
           )}
         >
           {/* Section Tabs */}
-          <div className="flex border-b border-bolt-elements-borderColor bg-[#0f0f0f]">
+          <div className="flex border-b border-bolt-elements-borderColor bg-[#0b0d13]">
             <button
               type="button"
               className={classNames(
@@ -464,7 +464,7 @@ export const CombinedModelSelector = ({
                 'flex items-center justify-center gap-2',
                 activeSection === 'provider'
                   ? 'bg-[#1e3a5f]/40 text-[#8badd4] border-b-2 border-[#4d6a8f]'
-                  : 'bg-[#0f0f0f] text-bolt-elements-textSecondary hover:bg-[#1a1a1a] hover:text-bolt-elements-textPrimary',
+                  : 'bg-[#0b0d13] text-bolt-elements-textSecondary hover:bg-[#1a2332] hover:text-bolt-elements-textPrimary',
               )}
               onClick={() => {
                 setActiveSection('provider');
@@ -482,7 +482,7 @@ export const CombinedModelSelector = ({
                 'flex items-center justify-center gap-2',
                 activeSection === 'model'
                   ? 'bg-[#1e3a5f]/40 text-[#8badd4] border-b-2 border-[#4d6a8f]'
-                  : 'bg-[#0f0f0f] text-bolt-elements-textSecondary hover:bg-[#1a1a1a] hover:text-bolt-elements-textPrimary',
+                  : 'bg-[#0b0d13] text-bolt-elements-textSecondary hover:bg-[#1a2332] hover:text-bolt-elements-textPrimary',
               )}
               onClick={() => {
                 setActiveSection('model');
@@ -522,7 +522,7 @@ export const CombinedModelSelector = ({
                 placeholder={`Search ${activeSection === 'provider' ? 'providers' : 'models'}... (⌘K to clear)`}
                 className={classNames(
                   'w-full pl-9 pr-9 py-2 rounded-lg text-sm',
-                  'bg-[#1a1a1a] border border-bolt-elements-borderColor',
+                  'bg-[#1a2332] border border-bolt-elements-borderColor',
                   'text-bolt-elements-textPrimary placeholder:text-bolt-elements-textTertiary',
                   'focus:outline-none focus:ring-2 focus:ring-[#4d6a8f]/50 focus:border-[#4d6a8f]',
                   'transition-all',
@@ -562,7 +562,7 @@ export const CombinedModelSelector = ({
                     'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all',
                     showFreeModelsOnly
                       ? 'bg-[#1e3a5f]/30 text-[#8badd4] border border-[#4d6a8f]/30'
-                      : 'bg-[#1a1a1a] text-bolt-elements-textSecondary border border-bolt-elements-borderColor hover:border-[#4d6a8f]/30',
+                      : 'bg-[#1a2332] text-bolt-elements-textSecondary border border-bolt-elements-borderColor hover:border-[#4d6a8f]/30',
                   )}
                 >
                   <span className="i-ph:gift" />
@@ -619,8 +619,8 @@ export const CombinedModelSelector = ({
                     'flex items-center gap-3',
                     provider?.name === p.name
                       ? 'bg-[#1e3a5f]/20 text-[#8badd4]'
-                      : 'text-bolt-elements-textPrimary hover:bg-[#1a1a1a]',
-                    focusedIndex === index ? 'ring-1 ring-inset ring-[#4d6a8f]/50 bg-[#1a1a1a]' : '',
+                      : 'text-bolt-elements-textPrimary hover:bg-[#1a2332]',
+                    focusedIndex === index ? 'ring-1 ring-inset ring-[#4d6a8f]/50 bg-[#1a2332]' : '',
                   )}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -659,8 +659,8 @@ export const CombinedModelSelector = ({
                     'px-4 py-3 cursor-pointer transition-all',
                     model === m.name
                       ? 'bg-[#1e3a5f]/20 text-[#8badd4]'
-                      : 'text-bolt-elements-textPrimary hover:bg-[#1a1a1a]',
-                    focusedIndex === index ? 'ring-1 ring-inset ring-[#4d6a8f]/50 bg-[#1a1a1a]' : '',
+                      : 'text-bolt-elements-textPrimary hover:bg-[#1a2332]',
+                    focusedIndex === index ? 'ring-1 ring-inset ring-[#4d6a8f]/50 bg-[#1a2332]' : '',
                   )}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -698,24 +698,24 @@ export const CombinedModelSelector = ({
           </div>
 
           {/* Footer Hint */}
-          <div className="px-4 py-2 border-t border-bolt-elements-borderColor/50 bg-[#0a0a0a]">
+          <div className="px-4 py-2 border-t border-bolt-elements-borderColor/50 bg-[#0b0d13]">
             <div className="flex items-center justify-between text-xs text-bolt-elements-textTertiary">
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-[#1a1a1a] border border-bolt-elements-borderColor">↑↓</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-[#1a2332] border border-bolt-elements-borderColor">↑↓</kbd>
                   navigate
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-[#1a1a1a] border border-bolt-elements-borderColor">Tab</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-[#1a2332] border border-bolt-elements-borderColor">Tab</kbd>
                   switch
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-[#1a1a1a] border border-bolt-elements-borderColor">↵</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-[#1a2332] border border-bolt-elements-borderColor">↵</kbd>
                   select
                 </span>
               </div>
               <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 rounded bg-[#1a1a1a] border border-bolt-elements-borderColor">Esc</kbd>
+                <kbd className="px-1.5 py-0.5 rounded bg-[#1a2332] border border-bolt-elements-borderColor">Esc</kbd>
                 close
               </span>
             </div>

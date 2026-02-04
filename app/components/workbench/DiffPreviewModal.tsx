@@ -205,13 +205,13 @@ const DiffLineRow = memo(({ line }: DiffLineRowProps) => {
       {/* Line numbers */}
       <div
         className="w-12 flex-shrink-0 text-right pr-2 select-none border-r border-[#333]"
-        style={{ backgroundColor: '#141414', color: '#6b7280' }}
+        style={{ backgroundColor: '#131a24', color: '#6b7280' }}
       >
         {line.lineNumberBefore ?? ''}
       </div>
       <div
         className="w-12 flex-shrink-0 text-right pr-2 select-none border-r border-[#333]"
-        style={{ backgroundColor: '#141414', color: '#6b7280' }}
+        style={{ backgroundColor: '#131a24', color: '#6b7280' }}
       >
         {line.lineNumberAfter ?? ''}
       </div>
@@ -258,7 +258,7 @@ const DiffContent = memo(({ change }: DiffContentProps) => {
       {/* Stats bar */}
       <div
         className="flex items-center gap-4 px-4 py-2"
-        style={{ backgroundColor: '#141414', borderBottom: '1px solid #333' }}
+        style={{ backgroundColor: '#131a24', borderBottom: '1px solid #333' }}
       >
         <span className="text-sm text-green-400">+{stats.added} additions</span>
         <span className="text-sm text-red-400">-{stats.removed} deletions</span>
@@ -268,7 +268,7 @@ const DiffContent = memo(({ change }: DiffContentProps) => {
       </div>
 
       {/* Diff lines */}
-      <div className="flex-1 overflow-auto diff-modal-content" style={{ backgroundColor: '#1a1a1a' }}>
+      <div className="flex-1 overflow-auto diff-modal-content" style={{ backgroundColor: '#1a2332' }}>
         {diffLines.map((line, index) => (
           <DiffLineRow key={`${index}-${line.type}-${line.content.slice(0, 20)}`} line={line} />
         ))}
@@ -425,7 +425,7 @@ export const DiffPreviewModal = memo(() => {
               >
                 <div
                   className="w-[90vw] max-w-5xl h-[85vh] rounded-lg shadow-xl flex flex-col focus:outline-none"
-                  style={{ backgroundColor: '#1a1a1a', borderColor: '#333', borderWidth: '1px', borderStyle: 'solid' }}
+                  style={{ backgroundColor: '#1a2332', borderColor: '#333', borderWidth: '1px', borderStyle: 'solid' }}
                 >
                   {/* Accessibility: Hidden title and description for screen readers */}
                   <VisuallyHidden.Root asChild>
@@ -447,7 +447,7 @@ export const DiffPreviewModal = memo(() => {
                   {/* Header */}
                   <div
                     className="flex items-center justify-between px-4 py-3 rounded-t-lg"
-                    style={{ backgroundColor: '#141414', borderBottom: '1px solid #333' }}
+                    style={{ backgroundColor: '#131a24', borderBottom: '1px solid #333' }}
                   >
                     <div className="flex items-center gap-3">
                       {/* File icon and path */}
@@ -509,7 +509,7 @@ export const DiffPreviewModal = memo(() => {
                   {/* Footer with actions */}
                   <div
                     className="flex items-center justify-between px-4 py-3 rounded-b-lg"
-                    style={{ backgroundColor: '#141414', borderTop: '1px solid #333' }}
+                    style={{ backgroundColor: '#131a24', borderTop: '1px solid #333' }}
                   >
                     {/* Keyboard hints */}
                     <div className="flex items-center gap-4 text-xs" style={{ color: '#6b7280' }}>

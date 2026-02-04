@@ -9,8 +9,8 @@ type SizeType = 'sm' | 'md' | 'lg';
 
 // Status color mapping
 const STATUS_COLORS: Record<StatusType, string> = {
-  online: 'bg-green-500',
-  success: 'bg-green-500',
+  online: 'bg-emerald-500',
+  success: 'bg-emerald-500',
   offline: 'bg-red-500',
   error: 'bg-red-500',
   away: 'bg-yellow-500',

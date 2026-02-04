@@ -168,7 +168,7 @@ export default function McpTab() {
               onChange={(e) => setMCPConfigText(e.target.value)}
               className={classNames(
                 'w-full px-3 py-2 rounded-lg text-sm font-mono h-72',
-                'bg-[#F8F8F8] dark:bg-[#1A1A1A]',
+                'bg-[#F8F8F8] dark:bg-[#1a2332]',
                 'border',
                 error ? 'border-bolt-elements-icon-error' : 'border-[#E5E5E5] dark:border-[#333333]',
                 'text-bolt-elements-textPrimary',

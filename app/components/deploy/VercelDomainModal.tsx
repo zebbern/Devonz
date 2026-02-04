@@ -143,7 +143,7 @@ export function VercelDomainModal({ isOpen, onClose, projectId: propProjectId, c
             <RadixDialog.Content asChild>
               <motion.div
                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-[520px] max-w-[90vw] focus:outline-none rounded-xl shadow-2xl dark"
-                style={{ backgroundColor: '#1a1a1a', border: '1px solid #333333' }}
+                style={{ backgroundColor: '#1a2332', border: '1px solid #333333' }}
                 initial="closed"
                 animate="open"
                 exit="closed"
@@ -184,7 +184,7 @@ export function VercelDomainModal({ isOpen, onClose, projectId: propProjectId, c
                     <div className="flex items-center gap-2">
                       <div
                         className="flex items-center flex-1 rounded-lg overflow-hidden"
-                        style={{ backgroundColor: '#141414', border: '1px solid #333333' }}
+                        style={{ backgroundColor: '#131a24', border: '1px solid #333333' }}
                       >
                         <input
                           type="text"
@@ -198,7 +198,7 @@ export function VercelDomainModal({ isOpen, onClose, projectId: propProjectId, c
                           style={{ color: '#ffffff' }}
                           disabled={isSaving}
                         />
-                        <span className="px-3 py-2.5 text-sm" style={{ color: '#6b7280', backgroundColor: '#0a0a0a' }}>
+                        <span className="px-3 py-2.5 text-sm" style={{ color: '#6b7280', backgroundColor: '#0b0d13' }}>
                           .vercel.app
                         </span>
                       </div>
@@ -269,14 +269,14 @@ export function VercelDomainModal({ isOpen, onClose, projectId: propProjectId, c
                     {isLoading ? (
                       <div
                         className="flex items-center justify-center py-8 rounded-lg"
-                        style={{ backgroundColor: '#141414' }}
+                        style={{ backgroundColor: '#131a24' }}
                       >
                         <div className="i-svg-spinners:90-ring-with-bg w-6 h-6" style={{ color: '#9ca3af' }} />
                       </div>
                     ) : domains.length === 0 ? (
                       <div
                         className="text-center py-8 rounded-lg"
-                        style={{ backgroundColor: '#141414', color: '#6b7280' }}
+                        style={{ backgroundColor: '#131a24', color: '#6b7280' }}
                       >
                         <div className="i-ph:globe-simple w-8 h-8 mx-auto mb-2 opacity-50" />
                         <p className="text-sm">No domains configured</p>
@@ -287,7 +287,7 @@ export function VercelDomainModal({ isOpen, onClose, projectId: propProjectId, c
                           <div
                             key={domain.name}
                             className="flex items-center justify-between px-4 py-3 rounded-lg group"
-                            style={{ backgroundColor: '#141414' }}
+                            style={{ backgroundColor: '#131a24' }}
                           >
                             <div className="flex items-center gap-3">
                               <div

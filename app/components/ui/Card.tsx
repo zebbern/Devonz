@@ -9,7 +9,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(({ className, style, ...props
       ref={ref}
       className={classNames('rounded-lg border text-white shadow-sm', className)}
       style={{
-        backgroundColor: '#1f1f1f',
+        backgroundColor: '#0b0d13',
         borderColor: '#333',
         ...style,
       }}

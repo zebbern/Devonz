@@ -195,7 +195,7 @@ ${escapeBoltTags(file.content)}
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div
             className="rounded-xl shadow-2xl border border-[#333333] max-w-md w-full"
-            style={{ backgroundColor: '#1a1a1a' }}
+            style={{ backgroundColor: '#1a2332' }}
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">

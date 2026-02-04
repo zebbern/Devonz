@@ -19,7 +19,7 @@ body {
 /* Global dark scrollbar styling for the entire app */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #444444 #141414;
+  scrollbar-color: #444444 #131a24;
 }
 
 *::-webkit-scrollbar {
@@ -28,13 +28,13 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-  background: #141414;
+  background: #131a24;
 }
 
 *::-webkit-scrollbar-thumb {
   background-color: #444444;
   border-radius: 5px;
-  border: 2px solid #141414;
+  border: 2px solid #131a24;
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -42,7 +42,7 @@ body {
 }
 
 *::-webkit-scrollbar-corner {
-  background: #141414;
+  background: #131a24;
 }
 
 :root {
@@ -63,7 +63,7 @@ body {
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--modern-scrollbar-track-background, #141414);
+    background: var(--modern-scrollbar-track-background, #131a24);
   }
 
   &::-webkit-scrollbar-thumb {
@@ -78,13 +78,13 @@ body {
   }
 
   &::-webkit-scrollbar-corner {
-    background: var(--modern-scrollbar-track-background, #141414);
+    background: var(--modern-scrollbar-track-background, #131a24);
   }
 
   // Firefox support
   scrollbar-width: thin;
   // Use CSS variables for Firefox colors
-  scrollbar-color: var(--modern-scrollbar-thumb-background) var(--modern-scrollbar-track-background, #141414);
+  scrollbar-color: var(--modern-scrollbar-thumb-background) var(--modern-scrollbar-track-background, #131a24);
 }
 
 .modern-scrollbar-invert {

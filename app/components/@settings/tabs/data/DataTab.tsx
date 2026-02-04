@@ -234,7 +234,7 @@ export function DataTab() {
             onClick={() => setActiveSection(tab.id)}
             className="px-4 py-2 text-sm font-medium rounded-t-lg transition-colors"
             style={{
-              backgroundColor: activeSection === tab.id ? '#2a2a2a' : 'transparent',
+              backgroundColor: activeSection === tab.id ? '#21262d' : 'transparent',
               color: activeSection === tab.id ? '#fff' : '#9ca3af',
               borderBottom: activeSection === tab.id ? '2px solid #a855f7' : '2px solid transparent',
             }}

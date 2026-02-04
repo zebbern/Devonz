@@ -91,7 +91,7 @@ export const RecentChats: React.FC<RecentChatsProps> = ({ maxItems = 10 }) => {
         className={classNames(
           'rounded-xl overflow-hidden',
           'border border-[#3d5a7f]/30',
-          'bg-gradient-to-b from-[#1e3a5f]/10 to-[#0f0f0f]/90',
+          'bg-gradient-to-b from-[#1e3a5f]/10 to-[#0b0d13]/90',
         )}
       >
         {/* Table Header */}
@@ -132,7 +132,7 @@ export const RecentChats: React.FC<RecentChatsProps> = ({ maxItems = 10 }) => {
 
         {/* View All Link */}
         {chats.length >= maxItems && (
-          <div className="px-4 py-3 border-t border-[#3d5a7f]/20 bg-[#0f0f0f]/50">
+          <div className="px-4 py-3 border-t border-[#3d5a7f]/20 bg-[#0b0d13]/50">
             <button
               onClick={() => {
                 /* Could navigate to a full history page or open sidebar */

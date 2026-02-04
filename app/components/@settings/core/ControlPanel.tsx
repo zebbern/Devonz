@@ -189,17 +189,17 @@ export const ControlPanel = ({ open, onClose }: ControlPanelProps) => {
             aria-describedby={undefined}
             onEscapeKeyDown={handleClose}
             className="dark relative z-[101] w-[1000px] h-[80vh] rounded-xl shadow-2xl border border-[#333] flex overflow-hidden"
-            style={{ backgroundColor: '#1a1a1a' }}
+            style={{ backgroundColor: '#1a2332' }}
           >
             {/* Sidebar */}
-            <div className="w-48 border-r border-[#333] flex flex-col" style={{ backgroundColor: '#141414' }}>
+            <div className="w-48 border-r border-[#333] flex flex-col" style={{ backgroundColor: '#131a24' }}>
               {/* Header */}
-              <div className="px-4 py-4 border-b border-[#333]" style={{ backgroundColor: '#141414' }}>
+              <div className="px-4 py-4 border-b border-[#333]" style={{ backgroundColor: '#131a24' }}>
                 <h2 className="text-sm font-semibold text-white">Settings</h2>
               </div>
 
               {/* Nav Items */}
-              <nav className="flex-1 overflow-y-auto py-1" style={{ backgroundColor: '#141414' }}>
+              <nav className="flex-1 overflow-y-auto py-1" style={{ backgroundColor: '#131a24' }}>
                 {visibleTabs.map((tab) => {
                   const IconComponent = TAB_ICONS[tab.id];
                   const hasUpdate = getTabUpdateStatus(tab.id);
@@ -211,7 +211,7 @@ export const ControlPanel = ({ open, onClose }: ControlPanelProps) => {
                       onClick={() => handleTabClick(tab.id as TabType)}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm"
                       style={{
-                        backgroundColor: isActive ? '#2a2a2a' : 'transparent',
+                        backgroundColor: isActive ? '#21262d' : 'transparent',
                         color: isActive ? '#fff' : '#9ca3af',
                       }}
                     >
@@ -231,11 +231,11 @@ export const ControlPanel = ({ open, onClose }: ControlPanelProps) => {
 
             {/* Main Content */}
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-w-0" style={{ backgroundColor: '#1a1a1a' }}>
+            <div className="flex-1 flex flex-col min-w-0" style={{ backgroundColor: '#1a2332' }}>
               {/* Content Header */}
               <div
                 className="flex items-center justify-between px-6 py-4 border-b border-[#333]"
-                style={{ backgroundColor: '#1a1a1a' }}
+                style={{ backgroundColor: '#1a2332' }}
               >
                 <DialogTitle className="text-sm font-semibold text-white">
                   {activeTab ? TAB_LABELS[activeTab] : 'Select a setting'}
@@ -243,14 +243,14 @@ export const ControlPanel = ({ open, onClose }: ControlPanelProps) => {
                 <button
                   onClick={handleClose}
                   className="p-1.5 rounded hover:bg-[#333] transition-colors"
-                  style={{ backgroundColor: '#2a2a2a' }}
+                  style={{ backgroundColor: '#21262d' }}
                 >
                   <div className="i-ph:x w-4 h-4 text-gray-400" />
                 </button>
               </div>
 
               {/* Tab Content */}
-              <div className="flex-1 overflow-y-auto p-6" style={{ backgroundColor: '#1a1a1a' }}>
+              <div className="flex-1 overflow-y-auto p-6" style={{ backgroundColor: '#1a2332' }}>
                 {activeTab ? (
                   getTabComponent(activeTab)
                 ) : (

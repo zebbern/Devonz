@@ -34,7 +34,7 @@
 /* Dark theme scrollbar for diff modal */
 .diff-modal-content {
   scrollbar-width: thin;
-  scrollbar-color: #444444 #1a1a1a;
+  scrollbar-color: #444444 #1a2332;
 }
 
 .diff-modal-content::-webkit-scrollbar {
@@ -43,14 +43,14 @@
 }
 
 .diff-modal-content::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #1a2332;
   border-radius: 5px;
 }
 
 .diff-modal-content::-webkit-scrollbar-thumb {
   background-color: #444444;
   border-radius: 5px;
-  border: 2px solid #1a1a1a;
+  border: 2px solid #1a2332;
 }
 
 .diff-modal-content::-webkit-scrollbar-thumb:hover {
@@ -58,13 +58,13 @@
 }
 
 .diff-modal-content::-webkit-scrollbar-corner {
-  background: #1a1a1a;
+  background: #1a2332;
 }
 
 /* Generic dark scrollbar for all workbench panels */
 .dark-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #444444 #141414;
+  scrollbar-color: #444444 #131a24;
 }
 
 .dark-scrollbar::-webkit-scrollbar {
@@ -73,14 +73,14 @@
 }
 
 .dark-scrollbar::-webkit-scrollbar-track {
-  background: #141414;
+  background: #131a24;
   border-radius: 5px;
 }
 
 .dark-scrollbar::-webkit-scrollbar-thumb {
   background-color: #444444;
   border-radius: 5px;
-  border: 2px solid #141414;
+  border: 2px solid #131a24;
 }
 
 .dark-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -88,7 +88,7 @@
 }
 
 .dark-scrollbar::-webkit-scrollbar-corner {
-  background: #141414;
+  background: #131a24;
 }
 
 /* Estilos para as linhas de diff */

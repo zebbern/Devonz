@@ -721,7 +721,7 @@ export default function SupabaseTab() {
                   placeholder="Enter your Supabase access token"
                   className={classNames(
                     'w-full px-3 py-2 rounded-lg text-sm',
-                    'bg-[#F8F8F8] dark:bg-[#1A1A1A]',
+                    'bg-[#F8F8F8] dark:bg-[#1a2332]',
                     'border border-[#E5E5E5] dark:border-[#333333]',
                     'text-bolt-elements-textPrimary placeholder-bolt-elements-textTertiary',
                     'focus:outline-none focus:ring-1 focus:ring-bolt-elements-borderColorActive',

@@ -93,7 +93,7 @@ export function LeftActionPanel({ importChat }: LeftActionPanelProps) {
           }}
           variant="default"
           className={buttonBaseClass}
-          style={{ backgroundColor: '#1a1a1a', width: '100%', height: '100%' }}
+          style={{ backgroundColor: '#1a2332', width: '100%', height: '100%' }}
         >
           <span className="i-ph:upload-simple w-4 h-4" />
           <span>Import Chat</span>
@@ -105,7 +105,7 @@ export function LeftActionPanel({ importChat }: LeftActionPanelProps) {
         <ImportFolderButton
           importChat={importChat}
           className={buttonBaseClass}
-          style={{ backgroundColor: '#1a1a1a', width: '100%', height: '100%' }}
+          style={{ backgroundColor: '#1a2332', width: '100%', height: '100%' }}
         />
       </div>
 
