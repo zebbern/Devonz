@@ -16,33 +16,48 @@ body {
   background-color: var(--bolt-elements-bg-depth-1);
 }
 
-/* Global dark scrollbar styling for the entire app */
-* {
+// Modern scrollbar styling - apply only to scrollable containers
+html,
+body,
+.chat-container,
+.editor-panel,
+.file-tree,
+.terminal-container,
+.settings-panel,
+.message-list,
+.code-block,
+pre,
+textarea,
+[class*="overflow-auto"],
+[class*="overflow-y-auto"],
+[class*="overflow-x-auto"],
+[class*="overflow-scroll"] {
   scrollbar-width: thin;
   scrollbar-color: #444444 #131a24;
-}
 
-*::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
 
-*::-webkit-scrollbar-track {
-  background: #131a24;
-}
+  &::-webkit-scrollbar-track {
+    background: #131a24;
+    border-radius: 4px;
+  }
 
-*::-webkit-scrollbar-thumb {
-  background-color: #444444;
-  border-radius: 5px;
-  border: 2px solid #131a24;
-}
+  &::-webkit-scrollbar-thumb {
+    background-color: #444444;
+    border-radius: 4px;
+    border: 2px solid #131a24;
 
-*::-webkit-scrollbar-thumb:hover {
-  background-color: #555555;
-}
+    &:hover {
+      background-color: #555555;
+    }
+  }
 
-*::-webkit-scrollbar-corner {
-  background: #131a24;
+  &::-webkit-scrollbar-corner {
+    background: #131a24;
+  }
 }
 
 :root {
@@ -100,4 +115,19 @@ body {
 
   // Firefox support for inverted colors
   scrollbar-color: color-mix(in srgb, var(--bolt-elements-textPrimary), transparent 50%) transparent;
+}
+
+// Content visibility optimization for long message lists
+// Improves scroll performance by skipping rendering of off-screen content
+.message-item,
+.chat-message,
+[class*='Message'] {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px; // Estimated height for placeholder
+}
+
+// File tree items optimization for large directories
+.file-tree-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 24px;
 }

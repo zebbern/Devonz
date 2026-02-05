@@ -3,7 +3,7 @@
  * Preventing TS checks with files presented in the video for a better presentation.
  */
 import type { JSONValue, Message } from 'ai';
-import React, { type RefCallback, useEffect, useState } from 'react';
+import React, { type RefCallback, useCallback, useEffect, useMemo, useState } from 'react';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Menu } from '~/components/sidebar/Menu.client';
 import { Workbench } from '~/components/workbench/Workbench.client';
@@ -138,7 +138,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
     },
     ref,
   ) => {
-    const TEXTAREA_MAX_HEIGHT = chatStarted ? 400 : 200;
+    const TEXTAREA_MAX_HEIGHT = useMemo(() => (chatStarted ? 400 : 200), [chatStarted]);
     const [apiKeys, setApiKeys] = useState<Record<string, string>>(getApiKeysFromCookies());
     const [modelList, setModelList] = useState<ModelInfo[]>([]);
     const [isModelSettingsCollapsed, setIsModelSettingsCollapsed] = useState(false);
@@ -153,11 +153,14 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
     const [qrModalOpen, setQrModalOpen] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
 
-    const handleResize = (deltaX: number) => {
-      // Negative delta means dragging left (making workbench bigger)
-      const newWidth = workbenchWidth - deltaX;
-      workbenchStore.setWorkbenchWidth(newWidth);
-    };
+    const handleResize = useCallback(
+      (deltaX: number) => {
+        // Negative delta means dragging left (making workbench bigger)
+        const newWidth = workbenchWidth - deltaX;
+        workbenchStore.setWorkbenchWidth(newWidth);
+      },
+      [workbenchWidth],
+    );
 
     useEffect(() => {
       if (expoUrl) {
@@ -241,67 +244,73 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
       }
     }, [providerList, provider]);
 
-    const onApiKeysChange = async (providerName: string, apiKey: string) => {
-      const newApiKeys = { ...apiKeys, [providerName]: apiKey };
-      setApiKeys(newApiKeys);
-      Cookies.set('apiKeys', JSON.stringify(newApiKeys));
+    const onApiKeysChange = useCallback(
+      async (providerName: string, apiKey: string) => {
+        const newApiKeys = { ...apiKeys, [providerName]: apiKey };
+        setApiKeys(newApiKeys);
+        Cookies.set('apiKeys', JSON.stringify(newApiKeys));
 
-      setIsModelLoading(providerName);
+        setIsModelLoading(providerName);
 
-      let providerModels: ModelInfo[] = [];
+        let providerModels: ModelInfo[] = [];
 
-      try {
-        const response = await fetch(`/api/models/${encodeURIComponent(providerName)}`);
-        const data = await response.json();
-        providerModels = (data as { modelList: ModelInfo[] }).modelList;
-      } catch (error) {
-        console.error('Error loading dynamic models for:', providerName, error);
-      }
+        try {
+          const response = await fetch(`/api/models/${encodeURIComponent(providerName)}`);
+          const data = await response.json();
+          providerModels = (data as { modelList: ModelInfo[] }).modelList;
+        } catch (error) {
+          console.error('Error loading dynamic models for:', providerName, error);
+        }
 
-      // Only update models for the specific provider
-      setModelList((prevModels) => {
-        const otherModels = prevModels.filter((model) => model.provider !== providerName);
-        return [...otherModels, ...providerModels];
-      });
-      setIsModelLoading(undefined);
-    };
+        // Only update models for the specific provider
+        setModelList((prevModels) => {
+          const otherModels = prevModels.filter((model) => model.provider !== providerName);
+          return [...otherModels, ...providerModels];
+        });
+        setIsModelLoading(undefined);
+      },
+      [apiKeys],
+    );
 
-    const startListening = () => {
+    const startListening = useCallback(() => {
       if (recognition) {
         recognition.start();
         setIsListening(true);
       }
-    };
+    }, [recognition]);
 
-    const stopListening = () => {
+    const stopListening = useCallback(() => {
       if (recognition) {
         recognition.stop();
         setIsListening(false);
       }
-    };
+    }, [recognition]);
 
-    const handleSendMessage = (event: React.UIEvent, messageInput?: string) => {
-      if (sendMessage) {
-        sendMessage(event, messageInput);
-        setSelectedElement?.(null);
+    const handleSendMessage = useCallback(
+      (event: React.UIEvent, messageInput?: string) => {
+        if (sendMessage) {
+          sendMessage(event, messageInput);
+          setSelectedElement?.(null);
 
-        if (recognition) {
-          recognition.abort(); // Stop current recognition
-          setTranscript(''); // Clear transcript
-          setIsListening(false);
+          if (recognition) {
+            recognition.abort(); // Stop current recognition
+            setTranscript(''); // Clear transcript
+            setIsListening(false);
 
-          // Clear the input by triggering handleInputChange with empty value
-          if (handleInputChange) {
-            const syntheticEvent = {
-              target: { value: '' },
-            } as React.ChangeEvent<HTMLTextAreaElement>;
-            handleInputChange(syntheticEvent);
+            // Clear the input by triggering handleInputChange with empty value
+            if (handleInputChange) {
+              const syntheticEvent = {
+                target: { value: '' },
+              } as React.ChangeEvent<HTMLTextAreaElement>;
+              handleInputChange(syntheticEvent);
+            }
           }
         }
-      }
-    };
+      },
+      [sendMessage, setSelectedElement, recognition, handleInputChange],
+    );
 
-    const handleFileUpload = () => {
+    const handleFileUpload = useCallback(() => {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
@@ -322,36 +331,39 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
       };
 
       input.click();
-    };
+    }, [uploadedFiles, imageDataList, setUploadedFiles, setImageDataList]);
 
-    const handlePaste = async (e: React.ClipboardEvent) => {
-      const items = e.clipboardData?.items;
+    const handlePaste = useCallback(
+      async (e: React.ClipboardEvent) => {
+        const items = e.clipboardData?.items;
 
-      if (!items) {
-        return;
-      }
-
-      for (const item of items) {
-        if (item.type.startsWith('image/')) {
-          e.preventDefault();
-
-          const file = item.getAsFile();
-
-          if (file) {
-            const reader = new FileReader();
-
-            reader.onload = (e) => {
-              const base64Image = e.target?.result as string;
-              setUploadedFiles?.([...uploadedFiles, file]);
-              setImageDataList?.([...imageDataList, base64Image]);
-            };
-            reader.readAsDataURL(file);
-          }
-
-          break;
+        if (!items) {
+          return;
         }
-      }
-    };
+
+        for (const item of items) {
+          if (item.type.startsWith('image/')) {
+            e.preventDefault();
+
+            const file = item.getAsFile();
+
+            if (file) {
+              const reader = new FileReader();
+
+              reader.onload = (e) => {
+                const base64Image = e.target?.result as string;
+                setUploadedFiles?.([...uploadedFiles, file]);
+                setImageDataList?.([...imageDataList, base64Image]);
+              };
+              reader.readAsDataURL(file);
+            }
+
+            break;
+          }
+        }
+      },
+      [uploadedFiles, imageDataList, setUploadedFiles, setImageDataList],
+    );
 
     const baseChat = (
       <div

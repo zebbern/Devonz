@@ -21,6 +21,26 @@ export default defineConfig((config) => {
       rollupOptions: {
         // Externalize undici and util/types for client builds - these are server-only modules
         external: ['undici', 'util/types', 'node:util/types'],
+        output: {
+          manualChunks: {
+            'vendor-codemirror': [
+              '@codemirror/autocomplete',
+              '@codemirror/commands',
+              '@codemirror/language',
+              '@codemirror/search',
+              '@codemirror/state',
+              '@codemirror/view',
+            ],
+            'vendor-ai': ['ai', '@ai-sdk/anthropic', '@ai-sdk/openai', '@ai-sdk/google'],
+            'vendor-ui': [
+              'framer-motion',
+              '@radix-ui/react-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-popover',
+            ],
+            'vendor-syntax': ['shiki'],
+          },
+        },
       },
     },
     resolve: {
