@@ -507,7 +507,7 @@ export const DiffPreviewModal = memo(() => {
                         icon="i-ph:x"
                         onClick={handleClose}
                         title="Close (Escape)"
-                        style={{ color: '#6b7280' }}
+                        className="text-[#6b7280]"
                       />
                     </div>
                   </div>
