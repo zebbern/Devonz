@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from '~/components/ui/Card';
 import { Progress } from '~/components/ui/Progress';
-import { RotateCw, Trash2, Code, Database, Package, Loader2 } from 'lucide-react';
 import { classNames } from '~/utils/classNames';
 import type { OllamaModel } from './types';
 
@@ -36,17 +35,17 @@ function ModelCard({ model, onUpdate, onDelete }: ModelCardProps) {
             </div>
             <div className="flex items-center gap-4 text-xs text-bolt-elements-textSecondary">
               <div className="flex items-center gap-1">
-                <Code className="w-3 h-3" />
+                <div className="i-ph:code size-3" />
                 <span>{model.digest.substring(0, 8)}</span>
               </div>
               {model.details && (
                 <>
                   <div className="flex items-center gap-1">
-                    <Database className="w-3 h-3" />
+                    <div className="i-ph:database size-3" />
                     <span>{model.details.parameter_size}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Package className="w-3 h-3" />
+                    <div className="i-ph:package size-3" />
                     <span>{model.details.quantization_level}</span>
                   </div>
                 </>
@@ -65,12 +64,12 @@ function ModelCard({ model, onUpdate, onDelete }: ModelCardProps) {
             >
               {model.status === 'updating' ? (
                 <>
-                  <Loader2 className="w-3 h-3 animate-spin" />
+                  <div className="i-ph:spinner size-3 animate-spin" />
                   Updating
                 </>
               ) : (
                 <>
-                  <RotateCw className="w-3 h-3" />
+                  <div className="i-ph:arrows-clockwise size-3" />
                   Update
                 </>
               )}
@@ -84,7 +83,7 @@ function ModelCard({ model, onUpdate, onDelete }: ModelCardProps) {
                 'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500/10',
               )}
             >
-              <Trash2 className="w-3 h-3" />
+              <div className="i-ph:trash size-3" />
               Delete
             </button>
           </div>
