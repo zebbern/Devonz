@@ -5,10 +5,6 @@ export type Theme = 'dark' | 'light';
 
 export const kTheme = 'devonz_theme';
 
-export function themeIsDark() {
-  return themeStore.get() === 'dark';
-}
-
 export const DEFAULT_THEME = 'light';
 
 export const themeStore = atom<Theme>(initStore());
