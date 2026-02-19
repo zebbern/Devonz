@@ -33,7 +33,7 @@ const BASE_COLORS = {
     700: '#334e68',
     800: '#1a2332', // Main card background
     900: '#131a24', // Secondary background
-    950: '#0d1117', // Deepest background (like GitHub dark)
+    950: '#002134', // Deepest background (like GitHub dark)
   },
   accent: {
     // Blue accent like Blink.new
@@ -47,7 +47,7 @@ const BASE_COLORS = {
     700: '#1d4ed8',
     800: '#1e40af',
     900: '#1e3a8a',
-    950: '#172554',
+    950: '#002134',
   },
   green: {
     50: '#F0FDF4',
@@ -113,6 +113,7 @@ export default defineConfig({
      * any conflicts with minified CSS classes.
      */
     ['b', {}],
+    [/^bg-bolt-elements-background-depth-([0-4])$/, ([_, d]) => ({ background: `var(--bolt-elements-bg-depth-${d})` })],
   ],
   theme: {
     colors: {
@@ -123,6 +124,7 @@ export default defineConfig({
           borderColorActive: 'var(--devonz-elements-borderColorActive)',
           background: {
             depth: {
+              0: 'var(--devonz-elements-bg-depth-0)',
               1: 'var(--devonz-elements-bg-depth-1)',
               2: 'var(--devonz-elements-bg-depth-2)',
               3: 'var(--devonz-elements-bg-depth-3)',
