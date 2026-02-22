@@ -1,45 +1,103 @@
 /**
- * Windows ESM Compatibility Patches
+ * Windows ESM Compatibility Patches (postinstall)
  *
- * On Windows, Node.js ESM loader doesn't accept bare absolute paths like C:\...
- * in dynamic import() — it expects valid file:// URLs.
+ * On Windows + Node.js v22+, two ESM import issues arise:
  *
- * This script patches two packages:
- * 1. @remix-run/dev/dist/vite/resolve-file-url.js
- *    - Returns file:/// URLs for out-of-root Windows paths
- * 2. vite-node/dist/client.mjs & client.cjs
- *    - importExternalModule() converts bare Windows paths to file:// before import()
+ * 1. unconfig@7.0.0 passes bare Windows paths (C:\...) to import()
+ *    when process.features.typescript is set (Node v22's TS stripping).
+ *    The ESM loader parses 'C:' as an unsupported URL scheme.
+ *    Fix: wrap the import() with pathToFileURL().
  *
- * Run automatically via postinstall.
+ * 2. @remix-run/dev resolve-file-url.js returns /@fs/ paths for
+ *    out-of-root Windows files. These can also cause scheme errors.
+ *    Fix: return file:/// URLs for Windows absolute paths.
+ *
+ * Run automatically via "postinstall" in package.json.
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
 
-// ─── Patch 1: @remix-run/dev resolve-file-url.js ───────────────────────────
+// Resolve the real .pnpm store path for unconfig
+function findUnconfigIndex() {
+  const candidates = [
+    // Direct node_modules
+    path.join(rootDir, 'node_modules', 'unconfig', 'dist', 'index.mjs'),
+  ];
 
-const resolveFileUrlPath = path.join(
-  rootDir, 'node_modules', '@remix-run', 'dev', 'dist', 'vite', 'resolve-file-url.js'
-);
+  // Also try to find via pnpm store
+  const pnpmDir = path.join(rootDir, 'node_modules', '.pnpm');
+  if (fs.existsSync(pnpmDir)) {
+    try {
+      const dirs = fs.readdirSync(pnpmDir).filter(d => d.startsWith('unconfig@'));
+      for (const dir of dirs) {
+        candidates.push(
+          path.join(pnpmDir, dir, 'node_modules', 'unconfig', 'dist', 'index.mjs')
+        );
+      }
+    } catch {}
+  }
+
+  return candidates.filter(p => fs.existsSync(p));
+}
+
+// ─── Patch 1: unconfig — pathToFileURL for Windows ──────────────────────────
+
+function patchUnconfig() {
+  const files = findUnconfigIndex();
+  if (files.length === 0) {
+    console.warn('[fix-windows] Could not find unconfig/dist/index.mjs — skipping.');
+    return;
+  }
+
+  for (const filePath of files) {
+    let content = fs.readFileSync(filePath, 'utf8');
+
+    if (content.includes('pathToFileURL(bundleFilepath)')) {
+      console.log(`[fix-windows] ${path.relative(rootDir, filePath)} already patched.`);
+      continue;
+    }
+
+    const target = 'const defaultImport = await import(bundleFilepath);';
+    const replacement =
+      "const { pathToFileURL } = await import('node:url');\n" +
+      '          const defaultImport = await import(pathToFileURL(bundleFilepath).href);';
+
+    const patched = content.replace(target, replacement);
+    if (patched === content) {
+      console.error(`[fix-windows] ${path.relative(rootDir, filePath)}: target not found — skipped.`);
+      continue;
+    }
+
+    fs.writeFileSync(filePath, patched);
+    console.log(`[fix-windows] Patched ${path.relative(rootDir, filePath)}`);
+  }
+}
+
+// ─── Patch 2: @remix-run/dev resolve-file-url.js ────────────────────────────
 
 function patchResolveFileUrl() {
+  const resolveFileUrlPath = path.join(
+    rootDir, 'node_modules', '@remix-run', 'dev', 'dist', 'vite', 'resolve-file-url.js'
+  );
+
   if (!fs.existsSync(resolveFileUrlPath)) {
-    console.warn('[fix-remix-windows] Could not find resolve-file-url.js — skipping.');
+    console.warn('[fix-windows] Could not find resolve-file-url.js — skipping.');
     return;
   }
 
   let content = fs.readFileSync(resolveFileUrlPath, 'utf8');
 
   if (content.includes("process.platform === 'win32'")) {
-    console.log('[fix-remix-windows] resolve-file-url.js already patched.');
+    console.log('[fix-windows] resolve-file-url.js already patched.');
     return;
   }
 
-  // Target: the line that returns the /@fs/ path for out-of-root files
   const target = 'return path__namespace.posix.join("/@fs", vite$1.normalizePath(filePath));';
   const replacement = `
     let normalizedPath = vite$1.normalizePath(filePath);
@@ -51,71 +109,17 @@ function patchResolveFileUrl() {
 
   const patched = content.replace(target, replacement);
   if (patched === content) {
-    console.error('[fix-remix-windows] resolve-file-url.js: target string not found — patch skipped.');
+    console.error('[fix-windows] resolve-file-url.js: target not found — skipped.');
     return;
   }
 
   fs.writeFileSync(resolveFileUrlPath, patched);
-  console.log('[fix-remix-windows] Successfully patched resolve-file-url.js');
-}
-
-// ─── Patch 2: vite-node importExternalModule ──────────────────────────────
-
-const VITE_NODE_IMPORT_TARGET = `  importExternalModule(path) {
-    return import(path);
-  }`;
-
-const VITE_NODE_IMPORT_REPLACEMENT = `  importExternalModule(path) {
-    // On Windows, bare absolute paths like C:\\... cause ERR_UNSUPPORTED_ESM_URL_SCHEME
-    // because the Node ESM loader treats 'c:' as an unsupported URL scheme.
-    // Convert to a proper file:// URL before importing.
-    if (process.platform === 'win32' && /^[a-zA-Z]:/.test(path)) {
-      const { pathToFileURL } = require('node:url');
-      return import(pathToFileURL(path).href);
-    }
-    return import(path);
-  }`;
-
-const VITE_NODE_IMPORT_REPLACEMENT_MJS = `  importExternalModule(path) {
-    // On Windows, bare absolute paths like C:\\... cause ERR_UNSUPPORTED_ESM_URL_SCHEME
-    // because the Node ESM loader treats 'c:' as an unsupported URL scheme.
-    // Convert to a proper file:// URL before importing.
-    if (process.platform === 'win32' && /^[a-zA-Z]:/.test(path)) {
-      return import(pathToFileURL(path).href);
-    }
-    return import(path);
-  }`;
-
-function patchViteNodeFile(filePath, replacement) {
-  if (!fs.existsSync(filePath)) {
-    console.warn(`[fix-remix-windows] Could not find ${path.basename(filePath)} — skipping.`);
-    return;
-  }
-
-  let content = fs.readFileSync(filePath, 'utf8');
-
-  if (content.includes('ERR_UNSUPPORTED_ESM_URL_SCHEME')) {
-    console.log(`[fix-remix-windows] ${path.basename(filePath)} already patched.`);
-    return;
-  }
-
-  const patched = content.replace(VITE_NODE_IMPORT_TARGET, replacement);
-  if (patched === content) {
-    console.error(`[fix-remix-windows] ${path.basename(filePath)}: target string not found — patch skipped.`);
-    return;
-  }
-
-  fs.writeFileSync(filePath, patched);
-  console.log(`[fix-remix-windows] Successfully patched ${path.basename(filePath)}`);
-}
-
-function patchViteNode() {
-  const viteNodeDist = path.join(rootDir, 'node_modules', 'vite-node', 'dist');
-  patchViteNodeFile(path.join(viteNodeDist, 'client.mjs'), VITE_NODE_IMPORT_REPLACEMENT_MJS);
-  patchViteNodeFile(path.join(viteNodeDist, 'client.cjs'), VITE_NODE_IMPORT_REPLACEMENT);
+  console.log('[fix-windows] Patched resolve-file-url.js');
 }
 
 // ─── Run all patches ──────────────────────────────────────────────────────
 
+console.log('[fix-windows] Applying Windows ESM compatibility patches...');
+patchUnconfig();
 patchResolveFileUrl();
-patchViteNode();
+console.log('[fix-windows] Done.');

@@ -1,4 +1,6 @@
-import { globSync } from 'fast-glob';
+import fg from 'fast-glob';
+
+const { globSync } = fg;
 import fs from 'node:fs/promises';
 import { basename } from 'node:path';
 import { defineConfig, presetIcons, presetUno, transformerDirectives } from 'unocss';
