@@ -5,7 +5,7 @@
 
 # ── Stage 1: base ─────────────────────────────────────────────
 # Shared base with corepack-managed pnpm
-FROM node:20-slim AS base
+FROM node:25-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@9.14.4 --activate
@@ -34,7 +34,7 @@ RUN pnpm prune --prod --ignore-scripts
 
 # ── Stage 5: runtime ─────────────────────────────────────────
 # Minimal final image — only build output + prod deps
-FROM node:20-slim AS runtime
+FROM node:25-slim AS runtime
 ENV NODE_ENV="production"
 ENV PORT="5173"
 WORKDIR /app
