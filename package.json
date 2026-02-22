@@ -140,8 +140,8 @@
     "@iconify-json/vscode-icons": "^1.2.43",
     "@iconify/types": "^2.0.0",
     "@remix-run/dev": "^2.15.2",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/diff": "^5.2.3",
     "@types/dom-speech-recognition": "^0.0.4",
     "@types/file-saver": "^2.0.7",
@@ -151,7 +151,7 @@
     "@types/react-dom": "^18.3.1",
     "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitest/coverage-v8": "^2.1.9",
+    "@vitest/coverage-v8": "^4.0.18",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
     "fast-glob": "^3.3.2",
@@ -168,7 +168,7 @@
     "vite": "^5.4.11",
     "vite-plugin-optimize-css-modules": "^1.1.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.1.7"
+    "vitest": "^4.0.18"
   },
   "lint-staged": {
     "app/**/*.{ts,tsx}": [
