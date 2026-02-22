@@ -99,7 +99,9 @@ export default defineConfig((config) => {
       },
     },
     test: {
+      pool: 'forks',
       testTimeout: 30_000,
+      teardownTimeout: 3_000,
       exclude: [
         '**/node_modules/**',
         '**/dist/**',

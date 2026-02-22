@@ -110,7 +110,7 @@
     "js-cookie": "^3.0.5",
     "jspdf": "^2.5.2",
     "jszip": "^3.10.1",
-    "mime": "^4.0.4",
+    "mime": "^4.1.0",
     "nanostores": "^0.10.3",
     "ollama-ai-provider": "^0.15.2",
     "path-browserify": "^1.0.1",
