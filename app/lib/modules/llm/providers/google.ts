@@ -13,37 +13,25 @@ export default class GoogleProvider extends BaseProvider {
   };
 
   staticModels: ModelInfo[] = [
-    /*
-     * Current Gemini Models (February 2026)
-     * Gemini 3 Pro Preview: Latest flagship (November 2025)
-     */
+    // Gemini 3.1 Pro Preview: Latest reasoning flagship (1M context)
     {
-      name: 'gemini-3-pro-preview',
-      label: 'Gemini 3 Pro',
+      name: 'gemini-3.1-pro-preview',
+      label: 'Gemini 3.1 Pro',
       provider: 'Google',
-      maxTokenAllowed: 2000000,
+      maxTokenAllowed: 1000000,
       maxCompletionTokens: 32768,
     },
 
-    // Gemini 3 Flash Preview: Fast and efficient (December 2025)
+    // Gemini 3 Flash: Fast next-gen model (1M context)
     {
-      name: 'gemini-3-flash-preview',
+      name: 'gemini-3-flash',
       label: 'Gemini 3 Flash',
       provider: 'Google',
       maxTokenAllowed: 1000000,
       maxCompletionTokens: 16384,
     },
 
-    // Gemini 2.5 Pro: Stable option (shutdown June 2026)
-    {
-      name: 'gemini-2.5-pro',
-      label: 'Gemini 2.5 Pro',
-      provider: 'Google',
-      maxTokenAllowed: 1000000,
-      maxCompletionTokens: 8192,
-    },
-
-    // Gemini 2.5 Flash: Lightweight (shutdown June 2026)
+    // Gemini 2.5 Flash: Stable production model (1M context)
     {
       name: 'gemini-2.5-flash',
       label: 'Gemini 2.5 Flash',

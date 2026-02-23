@@ -13,25 +13,30 @@ export default class DeepseekProvider extends BaseProvider {
   };
 
   staticModels: ModelInfo[] = [
-    {
-      name: 'deepseek-coder',
-      label: 'Deepseek-Coder',
-      provider: 'Deepseek',
-      maxTokenAllowed: 8000,
-      maxCompletionTokens: 8192,
-    },
+    // DeepSeek V3.2 Chat: General-purpose model (128k context)
     {
       name: 'deepseek-chat',
-      label: 'Deepseek-Chat',
+      label: 'DeepSeek Chat (V3.2)',
       provider: 'Deepseek',
-      maxTokenAllowed: 8000,
+      maxTokenAllowed: 128000,
       maxCompletionTokens: 8192,
     },
+
+    // DeepSeek V3.2 Reasoner: Multi-step reasoning model (128k context)
     {
       name: 'deepseek-reasoner',
-      label: 'Deepseek-Reasoner',
+      label: 'DeepSeek Reasoner (V3.2)',
       provider: 'Deepseek',
-      maxTokenAllowed: 8000,
+      maxTokenAllowed: 128000,
+      maxCompletionTokens: 8192,
+    },
+
+    // DeepSeek Coder: Code generation specialist (128k context)
+    {
+      name: 'deepseek-coder',
+      label: 'DeepSeek Coder',
+      provider: 'Deepseek',
+      maxTokenAllowed: 128000,
       maxCompletionTokens: 8192,
     },
   ];

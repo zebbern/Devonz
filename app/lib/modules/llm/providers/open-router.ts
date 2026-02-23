@@ -27,23 +27,28 @@ export default class OpenRouterProvider extends BaseProvider {
   };
 
   staticModels: ModelInfo[] = [
-    /*
-     * Essential fallback models - only the most stable/reliable ones
-     * Claude 3.5 Sonnet via OpenRouter: 200k context
-     */
+    // Claude Opus 4.6 via OpenRouter (200k context)
     {
-      name: 'anthropic/claude-3.5-sonnet',
-      label: 'Claude 3.5 Sonnet',
+      name: 'anthropic/claude-opus-4-6',
+      label: 'Claude Opus 4.6',
       provider: 'OpenRouter',
       maxTokenAllowed: 200000,
     },
 
-    // GPT-4o via OpenRouter: 128k context
+    // GPT-5.2 via OpenRouter (400k context)
     {
-      name: 'openai/gpt-4o',
-      label: 'GPT-4o',
+      name: 'openai/gpt-5.2',
+      label: 'GPT-5.2',
       provider: 'OpenRouter',
-      maxTokenAllowed: 128000,
+      maxTokenAllowed: 400000,
+    },
+
+    // Gemini 3 Flash via OpenRouter (1M context)
+    {
+      name: 'google/gemini-3-flash',
+      label: 'Gemini 3 Flash',
+      provider: 'OpenRouter',
+      maxTokenAllowed: 1000000,
     },
   ];
 

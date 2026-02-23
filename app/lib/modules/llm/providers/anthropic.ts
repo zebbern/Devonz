@@ -13,61 +13,31 @@ export default class AnthropicProvider extends BaseProvider {
   };
 
   staticModels: ModelInfo[] = [
-    /*
-     * Current Claude Models (February 2026)
-     * Claude Opus 4.6: Flagship model (February 5, 2026)
-     */
+    // Claude Opus 4.6: Flagship (February 5, 2026) — 200k context, 128k output
     {
-      name: 'claude-opus-4-6-20260205',
+      name: 'claude-opus-4-6',
       label: 'Claude Opus 4.6',
       provider: 'Anthropic',
-      maxTokenAllowed: 1000000,
+      maxTokenAllowed: 200000,
       maxCompletionTokens: 128000,
     },
 
-    // Claude Opus 4.5: Previous flagship (November 24, 2025)
+    // Claude Sonnet 4.6: Balanced (February 17, 2026) — 200k context, 64k output
     {
-      name: 'claude-opus-4-5-20251124',
-      label: 'Claude Opus 4.5',
+      name: 'claude-sonnet-4-6',
+      label: 'Claude Sonnet 4.6',
       provider: 'Anthropic',
       maxTokenAllowed: 200000,
       maxCompletionTokens: 64000,
     },
 
-    // Claude Sonnet 4.5: Balanced performance (September 29, 2025)
-    {
-      name: 'claude-sonnet-4-5-20250929',
-      label: 'Claude Sonnet 4.5',
-      provider: 'Anthropic',
-      maxTokenAllowed: 200000,
-      maxCompletionTokens: 64000,
-    },
-
-    // Claude Haiku 4.5: Fast and efficient (October 15, 2025)
+    // Claude Haiku 4.5: Fast and cost-efficient (October 15, 2025) — 200k context
     {
       name: 'claude-haiku-4-5-20251015',
       label: 'Claude Haiku 4.5',
       provider: 'Anthropic',
       maxTokenAllowed: 200000,
       maxCompletionTokens: 32000,
-    },
-
-    // Claude Opus 4.1: Previous flagship (August 5, 2025)
-    {
-      name: 'claude-opus-4-1-20250805',
-      label: 'Claude Opus 4.1',
-      provider: 'Anthropic',
-      maxTokenAllowed: 200000,
-      maxCompletionTokens: 32000,
-    },
-
-    // Claude 3.5 Sonnet: Stable fallback
-    {
-      name: 'claude-3-5-sonnet-20241022',
-      label: 'Claude 3.5 Sonnet',
-      provider: 'Anthropic',
-      maxTokenAllowed: 200000,
-      maxCompletionTokens: 8192,
     },
   ];
 
@@ -154,7 +124,6 @@ export default class AnthropicProvider extends BaseProvider {
     });
     const anthropic = createAnthropic({
       apiKey,
-      headers: { 'anthropic-beta': 'output-128k-2025-02-19' },
     });
 
     return anthropic(model);

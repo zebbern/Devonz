@@ -13,67 +13,30 @@ export default class MistralProvider extends BaseProvider {
   };
 
   staticModels: ModelInfo[] = [
+    // Mistral Large 3: Flagship model (256k context)
     {
-      name: 'open-mistral-7b',
-      label: 'Mistral 7B',
+      name: 'mistral-large-latest',
+      label: 'Mistral Large 3',
       provider: 'Mistral',
-      maxTokenAllowed: 8000,
+      maxTokenAllowed: 256000,
       maxCompletionTokens: 8192,
     },
+
+    // Mistral Medium 3: Balanced performance (128k context)
     {
-      name: 'open-mixtral-8x7b',
-      label: 'Mistral 8x7B',
+      name: 'mistral-medium-latest',
+      label: 'Mistral Medium 3',
       provider: 'Mistral',
-      maxTokenAllowed: 8000,
+      maxTokenAllowed: 128000,
       maxCompletionTokens: 8192,
     },
-    {
-      name: 'open-mixtral-8x22b',
-      label: 'Mistral 8x22B',
-      provider: 'Mistral',
-      maxTokenAllowed: 8000,
-      maxCompletionTokens: 8192,
-    },
-    {
-      name: 'open-codestral-mamba',
-      label: 'Codestral Mamba',
-      provider: 'Mistral',
-      maxTokenAllowed: 8000,
-      maxCompletionTokens: 8192,
-    },
-    {
-      name: 'open-mistral-nemo',
-      label: 'Mistral Nemo',
-      provider: 'Mistral',
-      maxTokenAllowed: 8000,
-      maxCompletionTokens: 8192,
-    },
-    {
-      name: 'ministral-8b-latest',
-      label: 'Mistral 8B',
-      provider: 'Mistral',
-      maxTokenAllowed: 8000,
-      maxCompletionTokens: 8192,
-    },
-    {
-      name: 'mistral-small-latest',
-      label: 'Mistral Small',
-      provider: 'Mistral',
-      maxTokenAllowed: 8000,
-      maxCompletionTokens: 8192,
-    },
+
+    // Codestral: Code generation specialist (256k context)
     {
       name: 'codestral-latest',
       label: 'Codestral',
       provider: 'Mistral',
-      maxTokenAllowed: 8000,
-      maxCompletionTokens: 8192,
-    },
-    {
-      name: 'mistral-large-latest',
-      label: 'Mistral Large Latest',
-      provider: 'Mistral',
-      maxTokenAllowed: 8000,
+      maxTokenAllowed: 256000,
       maxCompletionTokens: 8192,
     },
   ];

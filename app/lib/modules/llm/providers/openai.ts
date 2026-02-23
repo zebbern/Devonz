@@ -13,19 +13,16 @@ export default class OpenAIProvider extends BaseProvider {
   };
 
   staticModels: ModelInfo[] = [
-    /*
-     * Current OpenAI Models (February 2026)
-     * GPT-5.2: Latest flagship model (December 2025)
-     */
+    // GPT-5.2: Latest flagship (400k context, 128k output)
     {
       name: 'gpt-5.2',
       label: 'GPT-5.2',
       provider: 'OpenAI',
-      maxTokenAllowed: 256000,
-      maxCompletionTokens: 32768,
+      maxTokenAllowed: 400000,
+      maxCompletionTokens: 128000,
     },
 
-    // GPT-5: Standard reasoning model (August 2025)
+    // GPT-5: Standard model (128k context)
     {
       name: 'gpt-5',
       label: 'GPT-5',
@@ -34,28 +31,10 @@ export default class OpenAIProvider extends BaseProvider {
       maxCompletionTokens: 16384,
     },
 
-    // GPT-5 Mini: Cost-effective version
+    // GPT-5 Mini: Cost-effective (128k context)
     {
       name: 'gpt-5-mini',
       label: 'GPT-5 Mini',
-      provider: 'OpenAI',
-      maxTokenAllowed: 128000,
-      maxCompletionTokens: 8192,
-    },
-
-    // GPT-4.1: Current stable model
-    {
-      name: 'gpt-4.1',
-      label: 'GPT-4.1',
-      provider: 'OpenAI',
-      maxTokenAllowed: 128000,
-      maxCompletionTokens: 16384,
-    },
-
-    // GPT-4.1 Mini: Lightweight version
-    {
-      name: 'gpt-4.1-mini',
-      label: 'GPT-4.1 Mini',
       provider: 'OpenAI',
       maxTokenAllowed: 128000,
       maxCompletionTokens: 8192,
@@ -135,7 +114,7 @@ export default class OpenAIProvider extends BaseProvider {
         name: m.id,
         label: `${m.id} (${Math.floor(contextWindow / 1000)}k context)`,
         provider: this.name,
-        maxTokenAllowed: Math.min(contextWindow, 128000), // Cap at 128k for safety
+        maxTokenAllowed: Math.min(contextWindow, 400000),
         maxCompletionTokens,
       };
     });
