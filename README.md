@@ -4,9 +4,9 @@
 
 **Build anything with AI. Precision coding, orchestrated.**
 
-> **Version**: 2.0.0
+> **Version**: 2.1.0
 > **Status**: Production Ready (10/10 Hardened)
-> **Last Updated**: Feb 16, 2026
+> **Last Updated**: Feb 23, 2026
 
 Devonz is a sophisticated **multi-agent AI development environment** designed to accelerate full-stack application building. By orchestrating specialized agents (Coordinator, Researcher, Architect) via **LangGraph**, it transforms natural language requests into production-grade code with precision and context-awareness.
 
@@ -58,7 +58,8 @@ Devonz has been re-architected for performance, security, and scalability.
 
 ### Prerequisites
 * **Node.js**: v20.19.0+ or v22.12.0+ (Strict requirement for Vite 7)
-* **pnpm**: v9+ (Recommended)
+* **pnpm**: v9+
+* **Docker Desktop for Windows** (for local database services)
 
 ### Installation
 
@@ -74,16 +75,26 @@ Devonz has been re-architected for performance, security, and scalability.
 
     ```bash
     cp .env.example .env.local
-    # Edit .env.local with your API keys (OpenAI, Anthropic, etc.)
+    # Fill in your AI provider API keys — local DB strings are pre-filled
     ```
 
-3. **Start Development Server**
+3. **Start Local Services**
+
+    ```bash
+    cd database && docker compose up -d && cd ..
+    ```
+
+    Starts PostgreSQL, Redis, Neo4j, and MinIO locally via Docker Desktop.
+
+4. **Start Development Server**
 
     ```bash
     pnpm run dev
     ```
 
-    Visit `http://localhost:5173` to start building.
+    Visit `http://127.0.0.1:5173` to start building.
+
+> **Local-first**: All database services run on your machine. Only AI provider API calls require internet access.
 
 ---
 

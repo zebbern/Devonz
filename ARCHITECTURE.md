@@ -1,7 +1,7 @@
 # System Architecture
 
-> **Version**: 1.0.0
-> **Last Updated**: Feb 16, 2026 (Dependency Migration)
+> **Version**: 1.1.0
+> **Last Updated**: Feb 23, 2026 (Local-First Infrastructure)
 > **ADR Registry**: [docs/adr](./docs/adr)
 
 ## Overview
@@ -21,16 +21,18 @@ graph TD
         Agents --> RBAC[RBAC Engine]
     end
     
-    subgraph "Agent Layer"
-        Agents --> Coordinator[Coordinator Agent]
-        Agents --> Researcher[Researcher Agent]
-        Agents --> Architect[Architect Agent]
+    subgraph "Agent Layer (LangGraph)"
+        Agents --> Coordinator[Coordinator — GPT-5.2]
+        Agents --> Researcher[Researcher — Gemini-3-Flash]
+        Agents --> Architect[Architect — Claude Opus 4.6]
+        Agents --> QC[QC Agent — GPT-5-mini]
     end
-    
-    subgraph "Data Layer"
-        Agents --> PGVector[(PostgreSQL + pgvector)]
-        Agents --> Neo4j[(Neo4j Graph DB)]
-        Agents --> Redis[(Redis Cache/Metrics)]
+
+    subgraph "Data Layer (Local Docker)"
+        Agents --> PGVector[(PostgreSQL + pgvector\n127.0.0.1:5432)]
+        Agents --> Neo4j[(Neo4j Graph DB\n127.0.0.1:7687)]
+        Agents --> Redis[(Redis\n127.0.0.1:6379)]
+        Agents --> MinIO[(MinIO S3\n127.0.0.1:9000)]
         Agents --> Encryption[Encryption Service]
     end
 ```
@@ -47,18 +49,26 @@ graph TD
 -   **Snapshot Integrity**: HMAC-SHA256 verification to prevent tampering of chat states.
 -   **Encryption-at-Rest**: AES-256-GCM authenticated encryption for sensitive project data.
 -   **Retention Engine**: Automated lifecycle management and data purging policies.
--   **Schema Parity**: Automated validation between Local (IndexedDB) and Cloud (Postgres) schemas.
+-   **Schema Parity**: Automated validation between Local (IndexedDB) and Local Postgres schemas.
 
 ### 3. Agent Orchestration
--   **Framework**: LangGraph.
--   **Pattern**: State Machine with cyclical graph nodes.
--   **Memory**: Short-term (Conversation) + Long-term (RAG/Embeddings) + Managed Persistence.
+-   **Framework**: LangGraph (StateGraph with typed reducer channels).
+-   **Pattern**: State Machine with cyclical graph nodes (Coordinator → Researcher → Architect → QC1 → QC2 → Fix loop → Finalize).
+-   **Memory**: Short-term (Conversation) + Long-term (RAG/Embeddings) + Redis Checkpointer.
 
-### 4. Persistence
--   **Relational**: PostgreSQL (User data, Projects).
--   **Vector**: pgvector (Code embeddings, Semantic search).
--   **Local**: IndexedDB (Chat history, offline capability) with integrity verification. Tests use `fake-indexeddb` for stability.
--   **Cache**: Redis (Rate limiting, Session state, Usage metrics).
+### 4. Persistence (All Local — Docker Desktop)
+
+All persistence services run **locally via `database/docker-compose.yml`**. No cloud database required. Only AI provider API calls use the internet.
+
+| Service | Local Address | Purpose |
+| :--- | :--- | :--- |
+| PostgreSQL + pgvector | `127.0.0.1:5432` | Relational data + semantic embeddings |
+| Neo4j | `bolt://127.0.0.1:7687` | Knowledge graph for Researcher agent |
+| Redis | `127.0.0.1:6379` | LangGraph checkpoint saver, rate limiting, usage metrics |
+| MinIO | `http://127.0.0.1:9000` | S3-compatible local file and backup storage |
+| IndexedDB | Browser | Chat history + offline capability (HMAC-SHA256 integrity) |
+
+> **Windows Note**: Use `127.0.0.1` not `localhost` for all service URLs to avoid IPv6 resolution issues on Windows.
 
 ## Data Flow
 
