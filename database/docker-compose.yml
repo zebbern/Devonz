@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-devonz_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devonz_local_pass}
       POSTGRES_DB: ${POSTGRES_DB:-devonz_db}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -20,7 +20,7 @@ services:
     restart: always
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-devonz_admin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-devonz_minio_pass}
     ports:
       - "${MINIO_API_PORT:-9000}:9000"
       - "${MINIO_CONSOLE_PORT:-9001}:9001"
@@ -32,7 +32,7 @@ services:
     image: redis:7-alpine
     container_name: devonz-redis
     restart: always
-    command: redis-server --requirepass ${REDIS_PASSWORD:-}
+    command: redis-server --requirepass ${REDIS_PASSWORD:-devonz_redis_pass}
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
@@ -55,7 +55,7 @@ services:
       - "${NEO4J_HTTP_PORT:-7474}:7474"
       - "${NEO4J_BOLT_PORT:-7687}:7687"
     environment:
-      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-devonz_neo4j_pass}
       - NEO4J_PLUGINS=["apoc"]
     volumes:
       - neo4j_data:/data

@@ -19,10 +19,10 @@ export class QCAgent {
       return;
     }
 
-    // Use OpenAI for QC (different from Architect/Researcher to get diversity)
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY || (process.env.OPENAI_API_KEY as string);
+    // Use OpenAI for QC (server-side only — process.env, not import.meta.env)
+    const apiKey = process.env.OPENAI_API_KEY as string;
     this._model = new ChatOpenAI({
-      modelName: 'gpt-4o', // Smart model for review
+      modelName: 'gpt-5-mini',
       temperature: 0.1,
       openAIApiKey: apiKey,
     });
@@ -128,14 +128,7 @@ export class QCAgent {
       const tasks = state.plan?.tasks || [];
       const pendingWork = tasks.filter((t) => t.status !== 'complete' && t.status !== 'failed');
 
-      if (pendingWork.length > 0) {
-        /*
-         * Loop back to Architect?
-         * Or if architect logic was "do all pending", then maybe we missed some?
-         * Depending on graph logic, if we return 'fix', graph might route us. Or 'architect'.
-         */
-        // For Phase 19, we will assume pass if architect marked them done.
-      }
+      const hasPendingWork = pendingWork.length > 0;
 
       const event: EventLogEntry = {
         eventId: crypto.randomUUID(),
@@ -144,39 +137,51 @@ export class QCAgent {
         type: 'qc_review',
         stage: 'QC2_COMPLETENESS',
         agent: 'qc',
-        summary: `QC2: All planned tasks reviewed.`,
+        summary: hasPendingWork
+          ? `QC2: ${pendingWork.length} task(s) still pending — routing back to architect.`
+          : `QC2: All planned tasks complete.`,
         visibility: 'user',
       };
 
-      /*
-       * We don't change stage to 'COMPLETE' here directly?
-       * The graph decides based on 'qc.reviews'.
-       * But graph logic says `workflow.addConditionalEdges('qc2', checkQCPass...`
-       * checkQCPass likely checks state.qc status?
-       * Let's update state.qc to passed.
-       */
+      const newIssue = hasPendingWork
+        ? {
+            issueId: crypto.randomUUID(),
+            stage: 'QC2_COMPLETENESS' as const,
+            category: 'completeness' as const,
+            severity: 'high' as const,
+            file: '',
+            title: 'Incomplete Tasks',
+            description: `${pendingWork.length} task(s) remain in pending state: ${pendingWork.map((t) => t.id).join(', ')}`,
+            recommendation: 'Architect must complete all pending tasks.',
+            fixStatus: 'open' as const,
+          }
+        : {
+            issueId: crypto.randomUUID(),
+            stage: 'QC2_COMPLETENESS' as const,
+            category: 'completeness' as const,
+            severity: 'low' as const,
+            file: '',
+            title: 'Completeness Pass',
+            description: 'All tasks reviewed and complete.',
+            recommendation: 'None',
+            fixStatus: 'fixed' as const,
+          };
 
       return {
         events: [event],
         qc: {
           ...state.qc,
-          issues: [
-            ...(state.qc?.issues || []),
-            {
-              issueId: crypto.randomUUID(),
-              stage: 'QC2_COMPLETENESS',
-              category: 'completeness',
-              severity: 'low',
-              file: '',
-              title: 'Automated Pass',
-              description: 'All tasks reviewed.',
-              recommendation: 'None',
-              fixStatus: 'fixed',
-            },
-          ],
-          pass: true,
+          issues: [...(state.qc?.issues || []), newIssue],
+          pass: !hasPendingWork,
+          severityCounts: hasPendingWork
+            ? {
+                ...(state.qc?.severityCounts || { critical: 0, high: 0, medium: 0, low: 0 }),
+                high: (state.qc?.severityCounts?.high || 0) + 1,
+              }
+            : state.qc?.severityCounts || { critical: 0, high: 0, medium: 0, low: 0 },
+          iteration: (state.qc?.iteration || 0) + 1,
         },
-        status: { ...state.status, stage: 'FINALIZE' }, // Hint to graph
+        status: { ...state.status, stage: hasPendingWork ? 'ARCH_BUILD' : 'FINALIZE' },
       };
     } catch (error: any) {
       return createErrorState(this._name, state, error);

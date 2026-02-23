@@ -37,9 +37,6 @@ export const PROVIDER_COMPLETION_LIMITS: Record<string, number> = {
 export function isReasoningModel(modelName: string): boolean {
   const result = /^(o1|o3|gpt-5)/i.test(modelName);
 
-  // DEBUG: Test regex matching
-  console.log(`REGEX TEST: "${modelName}" matches reasoning pattern: ${result}`);
-
   return result;
 }
 
