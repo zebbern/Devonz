@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { type Message } from 'ai';
+import { type CoreMessage as UIMessage } from 'ai';
 import { getAllChats, deleteChat } from '~/lib/persistence/chats';
 import { type IChatMetadata } from '~/lib/persistence/db';
 import { createScopedLogger } from '~/utils/logger';

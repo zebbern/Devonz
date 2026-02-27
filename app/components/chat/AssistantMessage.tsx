@@ -7,7 +7,7 @@ import Popover from '~/components/ui/Popover';
 import { workbenchStore } from '~/lib/stores/workbenchStore';
 import { WORK_DIR } from '~/utils/constants';
 import WithTooltip from '~/components/ui/Tooltip';
-import type { Message } from 'ai';
+import type { UIMessage as Message } from 'ai';
 import type { ProviderInfo } from '~/types/model';
 import type {
   TextUIPart,

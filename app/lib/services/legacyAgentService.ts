@@ -142,7 +142,7 @@ export class AgentOrchestrator {
 
       this._state.toolCalls.push(record);
       this._state.totalToolCalls++;
-      this._state.lastToolCall = record;
+      this._state.lastany /* ToolCall */ = record;
 
       if (result.success && result.data) {
         const data = result.data as Record<string, unknown>;

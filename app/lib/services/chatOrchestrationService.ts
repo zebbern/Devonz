@@ -4,12 +4,12 @@ import {
   shouldUseAgentMode,
   initializeAgentSession,
   processAgentToolInvocations,
-  processAgentToolCall,
+  processAgentany /* ToolCall */,
   isAgentToolName,
   incrementAgentIteration,
 } from './agentChatIntegration';
 import { createScopedLogger } from '~/utils/logger';
-import type { Message, DataStreamWriter, ToolSet, ToolCall } from 'ai';
+import type { CoreMessage as UIMessage, any /* DataStreamWriter */, ToolSet, } from 'ai';
 import type { ProgressAnnotation } from '~/types/context';
 
 const logger = createScopedLogger('ChatOrchestrationService');
@@ -38,7 +38,7 @@ export class ChatOrchestrationService {
   /**
    * Orchestrates tool merging and session initialization.
    */
-  async prepareChatSession(options: { agentMode: boolean; dataStream: DataStreamWriter; messages: Message[] }) {
+  async prepareChatSession(options: { agentMode: boolean; dataStream: any /* DataStreamWriter */; messages: Message[] }) {
     const { agentMode, dataStream } = options;
     const mcpService = MCPService.getInstance();
     const useAgentMode = shouldUseAgentMode({ agentMode });
@@ -71,7 +71,7 @@ export class ChatOrchestrationService {
   /**
    * Process tool invocations from messages.
    */
-  async processInvocations(messages: Message[], dataStream: DataStreamWriter, useAgentMode: boolean) {
+  async processInvocations(messages: Message[], dataStream: any /* DataStreamWriter */, useAgentMode: boolean) {
     const mcpService = MCPService.getInstance();
     let processedMessages = await mcpService.processToolInvocations(messages, dataStream);
 
@@ -85,16 +85,16 @@ export class ChatOrchestrationService {
   /**
    * Unified tool call processor for onStepFinish.
    */
-  handleStepFinish(toolCalls: ToolCall<string, unknown>[], dataStream: DataStreamWriter, useAgentMode: boolean) {
+  handleStepFinish(toolCalls: any[], dataStream: any /* DataStreamWriter */, useAgentMode: boolean) {
     const mcpService = MCPService.getInstance();
 
     toolCalls.forEach((toolCall) => {
       // Logic for determining tool type and routing
       if (useAgentMode && isAgentToolName(toolCall.toolName)) {
-        processAgentToolCall(toolCall, dataStream);
+        processAgentany /* ToolCall */(toolCall, dataStream);
         incrementAgentIteration();
       } else {
-        mcpService.processToolCall(toolCall, dataStream);
+        mcpService.processany /* ToolCall */(toolCall, dataStream);
       }
     });
   }

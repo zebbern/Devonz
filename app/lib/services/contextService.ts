@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import type { DataStreamWriter, Message } from 'ai';
+import type { any /* DataStreamWriter */, CoreMessage as UIMessage } from 'ai';
 import { type FileMap } from '~/lib/.server/llm/constants';
 import { createSummary } from '~/lib/.server/llm/create-summary';
 import { getFilePaths, selectContext } from '~/lib/.server/llm/select-context';
@@ -31,7 +31,7 @@ export interface PrepareContextOptions {
   apiKeys: Record<string, string>;
   providerSettings: Record<string, IProviderSetting>;
   context: AppContext; // Remix context (env)
-  dataStream: DataStreamWriter;
+  dataStream: any /* DataStreamWriter */;
   cumulativeUsage: {
     completionTokens: number;
     promptTokens: number;

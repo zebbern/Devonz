@@ -1,4 +1,4 @@
-import type { Message } from 'ai';
+import type { UIMessage as Message } from 'ai';
 import { generateId } from './fileUtils';
 
 export interface ProjectCommands {

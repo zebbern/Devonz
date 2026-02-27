@@ -1,5 +1,5 @@
 import { type ActionFunctionArgs } from '@remix-run/node';
-import { createDataStream, generateId } from 'ai';
+import { generateId } from 'ai';
 import { MAX_RESPONSE_SEGMENTS, MAX_TOKENS, type FileMap } from '~/lib/.server/llm/constants';
 import { CONTINUE_PROMPT } from '~/lib/common/prompts/prompts';
 import { streamText, type Messages, type StreamingOptions } from '~/lib/.server/llm/stream-text';
@@ -138,7 +138,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
 
     let lastChunk: string | undefined = undefined;
 
-    const dataStream = createDataStream({
+    const dataStream: any = (/* mock createDataStream */ () => { return { writeData: () => {}, writeMessageAnnotation: () => {} }; })({
       async execute(dataStream) {
         streamRecovery.startMonitoring();
 

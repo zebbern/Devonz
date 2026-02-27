@@ -58,7 +58,7 @@ export type ToolPermission =
   | 'diag.logs'
   | 'diag.errors';
 
-export interface ToolCall {
+export interface any /* ToolCall */ {
   id: string;
   tool: string;
   args: Record<string, unknown>;

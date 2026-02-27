@@ -198,7 +198,7 @@ export function getAgentRole(agent: AgentName): AgentRole | undefined {
 /**
  * Validate a tool call against agent permissions
  */
-export function validateToolCall(
+export function validateany /* ToolCall */(
   agent: AgentName,
   tool: string,
 ): { allowed: boolean; reason?: string; requiresApproval?: boolean } {

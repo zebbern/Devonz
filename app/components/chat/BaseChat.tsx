@@ -1,4 +1,4 @@
-import type { JSONValue, Message } from 'ai';
+import type { JSONValue, UIMessage as Message } from 'ai';
 import * as React from 'react';
 import { type RefCallback, useCallback, useEffect, useMemo, useState, memo } from 'react';
 import { ClientOnly } from 'remix-utils/client-only';

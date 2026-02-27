@@ -180,7 +180,7 @@ describe('AgentOrchestrator', () => {
       const state = orchestrator.getState();
       expect(state.totalToolCalls).toBe(1);
       expect(state.toolCalls).toHaveLength(1);
-      expect(state.lastToolCall?.name).toBe('devonz_read_file');
+      expect(state.lastany /* ToolCall */?.name).toBe('devonz_read_file');
     });
 
     it('should return error for unknown tool', async () => {

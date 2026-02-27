@@ -1,4 +1,4 @@
-import type { Message } from 'ai';
+import type { UIMessage as Message } from 'ai';
 import * as React from 'react';
 import { Fragment, forwardRef, type ForwardedRef } from 'react';
 import { useTranslation } from 'react-i18next';

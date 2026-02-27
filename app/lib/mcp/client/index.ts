@@ -8,8 +8,8 @@
  * - Logs all tool calls for audit
  */
 
-import type { AgentName, ToolCall, ToolResult } from '~/lib/mcp/types';
-import { validateToolCall } from '~/lib/mcp/client/permissions';
+import type { AgentName, any /* ToolCall */, ToolResult } from '~/lib/mcp/types';
+import { validateany /* ToolCall */ } from '~/lib/mcp/client/permissions';
 import { logToolCallStart, logToolCallEnd, logToolCallDenied } from '~/lib/mcp/server/audit';
 
 // Import tool implementations
@@ -59,7 +59,7 @@ const toolRegistry: Record<string, ToolHandler> = {
  * Gateway for all tool calls with permission enforcement and audit logging.
  */
 export class MCPClient {
-  private _pendingApprovals: Map<string, ToolCall> = new Map();
+  private _pendingApprovals: Map<string, any /* ToolCall */> = new Map();
 
   /**
    * Execute a tool call with permission checking and audit logging
@@ -73,7 +73,7 @@ export class MCPClient {
     const startTime = Date.now();
 
     // Create tool call record
-    const call: ToolCall = {
+    const call: any /* ToolCall */ = {
       id: `call_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
       tool,
       args,
@@ -83,7 +83,7 @@ export class MCPClient {
     };
 
     // Validate permissions
-    const validation = validateToolCall(agent, tool);
+    const validation = validateany /* ToolCall */(agent, tool);
 
     if (!validation.allowed) {
       logToolCallDenied(agent, tool, validation.reason || 'Permission denied', runId);
@@ -168,7 +168,7 @@ export class MCPClient {
   /**
    * Approve a pending gated tool call
    */
-  async approveToolCall(callId: string): Promise<ToolResult> {
+  async approveany /* ToolCall */(callId: string): Promise<ToolResult> {
     const call = this._pendingApprovals.get(callId);
 
     if (!call) {
@@ -231,7 +231,7 @@ export class MCPClient {
   /**
    * Reject a pending gated tool call
    */
-  rejectToolCall(callId: string): void {
+  rejectany /* ToolCall */(callId: string): void {
     const call = this._pendingApprovals.get(callId);
 
     if (call) {
@@ -243,7 +243,7 @@ export class MCPClient {
   /**
    * Get pending approvals
    */
-  getPendingApprovals(): ToolCall[] {
+  getPendingApprovals(): any /* ToolCall */[] {
     return Array.from(this._pendingApprovals.values());
   }
 
@@ -263,7 +263,7 @@ export class MCPClient {
    */
   getAvailableTools(agent: AgentName): string[] {
     return Object.keys(toolRegistry).filter((tool) => {
-      const validation = validateToolCall(agent, tool);
+      const validation = validateany /* ToolCall */(agent, tool);
 
       return validation.allowed;
     });

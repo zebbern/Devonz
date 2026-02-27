@@ -5,7 +5,7 @@
  * All writes are atomic and append-only.
  */
 
-import type { AgentName, AuditLogEntry, ToolCall, ToolResult } from '~/lib/mcp/types';
+import type { AgentName, AuditLogEntry, any /* ToolCall */, ToolResult } from '~/lib/mcp/types';
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -52,7 +52,7 @@ function redactSensitiveData(args: Record<string, unknown>): Record<string, unkn
 /**
  * Log a tool call attempt (before execution)
  */
-export function logToolCallStart(call: ToolCall): string {
+export function logToolCallStart(call: any /* ToolCall */): string {
   const auditId = generateAuditId();
 
   const entry: AuditLogEntry = {

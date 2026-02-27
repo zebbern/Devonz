@@ -330,7 +330,7 @@ export interface AgentExecutionState {
   maxIterations: number;
   status: AgentStatus;
   isExecuting: boolean;
-  lastToolCall?: ToolCallRecord;
+  lastany /* ToolCall */?: ToolCallRecord;
   toolCalls: ToolCallRecord[];
   totalToolCalls: number;
   sessionStartTime: number | null;
