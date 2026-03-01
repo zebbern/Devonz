@@ -87,6 +87,16 @@ const BASE_COLORS = {
     900: '#7F1D1D',
     950: '#450A0A',
   },
+  alinma: {
+    blue: '#004851',
+    deepBlue: '#00131F',
+    lavender: '#A39EFF',
+    lightLavender: '#D0CEFF',
+    softLavender: '#F1F0FF',
+    copper: '#BB7B6A',
+    lightCopper: '#FDA38F',
+    softCopper: '#FFF6F4',
+  },
 };
 
 const COLOR_PRIMITIVES = {
@@ -231,6 +241,10 @@ export default defineConfig({
           },
         },
       },
+    },
+    fontFamily: {
+      sans: ['"Alinma Display"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      heading: ['"Alinma Display"', 'Inter', 'sans-serif'],
     },
   },
   transformers: [transformerDirectives()],

@@ -103,7 +103,7 @@ export default function ChatAlert({ alert, clearAlert, postMessage }: Props) {
                   )}
                 >
                   <div className="i-ph:chat-circle-duotone"></div>
-                  Ask Devonz
+                  Ask Alinma Coder
                 </button>
                 <button
                   onClick={clearAlert}

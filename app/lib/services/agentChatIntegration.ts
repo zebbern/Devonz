@@ -1,7 +1,7 @@
 /**
  * Agent Chat Integration
  *
- * Integrates the Devonz Agent Mode with the chat flow.
+ * Integrates the Alinma coder Agent Mode with the chat flow.
  * Exposes agent tools in MCP-compatible format for the LLM to use.
  */
 
@@ -180,7 +180,7 @@ export function processAgentToolCall(
     dataStream.writeMessageAnnotation({
       type: 'toolCall',
       toolCallId,
-      serverName: 'devonz-agent',
+      serverName: 'alinma-coder-agent',
       toolName,
       toolDescription: definition.description,
     } satisfies ToolCallAnnotation);

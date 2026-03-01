@@ -70,6 +70,7 @@ export interface GitLabConnection {
     reset: number;
   };
   gitlabUrl?: string;
+  sshPort?: number;
 }
 
 export interface GitLabProjectResponse {

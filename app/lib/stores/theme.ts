@@ -6,7 +6,7 @@ const logger = createScopedLogger('ThemeStore');
 
 export type Theme = 'dark' | 'light';
 
-export const kTheme = 'devonz_theme';
+export const kTheme = 'alinma_coder_theme';
 
 export const DEFAULT_THEME = 'dark';
 
@@ -38,12 +38,12 @@ export function toggleTheme() {
 
   // Update user profile if it exists
   try {
-    const userProfile = localStorage.getItem('devonz_user_profile');
+    const userProfile = localStorage.getItem('alinma_coder_user_profile');
 
     if (userProfile) {
       const profile = JSON.parse(userProfile);
       profile.theme = newTheme;
-      localStorage.setItem('devonz_user_profile', JSON.stringify(profile));
+      localStorage.setItem('alinma_coder_user_profile', JSON.stringify(profile));
     }
   } catch (error) {
     logger.error('Error updating user profile theme:', error);

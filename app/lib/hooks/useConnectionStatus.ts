@@ -4,7 +4,7 @@ import { createScopedLogger } from '~/utils/logger';
 
 const logger = createScopedLogger('ConnectionStatus');
 
-const ACKNOWLEDGED_CONNECTION_ISSUE_KEY = 'devonz_acknowledged_connection_issue';
+const ACKNOWLEDGED_CONNECTION_ISSUE_KEY = 'alinma_coder_acknowledged_connection_issue';
 
 type ConnectionIssueType = 'disconnected' | 'high-latency' | null;
 

@@ -317,18 +317,18 @@ export function isConfigFile(filePath: string): boolean {
  * Load settings from localStorage
  */
 function loadSettingsFromStorage(): StagingSettings {
+  if (typeof window === 'undefined') {
+    return DEFAULT_SETTINGS;
+  }
+
   try {
-    if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem('devonz-staging-settings');
+    const saved = localStorage.getItem('alinma_coder-staging-settings');
 
-      if (saved) {
-        const parsed = JSON.parse(saved);
-
-        return { ...DEFAULT_SETTINGS, ...parsed };
-      }
+    if (saved) {
+      return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
     }
   } catch (error) {
-    logger.error('Failed to load staging settings from localStorage', error);
+    logger.error('Failed to load staging settings:', error);
   }
 
   return DEFAULT_SETTINGS;
@@ -338,12 +338,14 @@ function loadSettingsFromStorage(): StagingSettings {
  * Save settings to localStorage
  */
 function saveSettingsToStorage(settings: StagingSettings): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   try {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('devonz-staging-settings', JSON.stringify(settings));
-    }
+    localStorage.setItem('alinma_coder-staging-settings', JSON.stringify(settings));
   } catch (error) {
-    logger.error('Failed to save staging settings to localStorage', error);
+    logger.error('Failed to save staging settings:', error);
   }
 }
 

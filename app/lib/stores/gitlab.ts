@@ -10,14 +10,18 @@ const logger = createScopedLogger('GitLabConnection');
 
 // Auto-connect using environment variable
 const envToken = import.meta.env?.VITE_GITLAB_ACCESS_TOKEN;
+const envUrl = import.meta.env?.VITE_GITLAB_URL || 'http://localhost:8080';
+const envSshPort = import.meta.env?.VITE_GITLAB_SSH_PORT ? parseInt(import.meta.env.VITE_GITLAB_SSH_PORT) : undefined;
 
 const gitlabConnectionAtom = atom<GitLabConnection>({
   user: null,
   token: envToken || '',
   tokenType: 'personal-access-token',
+  gitlabUrl: envUrl,
+  sshPort: envSshPort,
 });
 
-const gitlabUrlAtom = atom('https://gitlab.com');
+const gitlabUrlAtom = atom(envUrl);
 
 // Initialize connection from localStorage on startup
 function initializeConnection() {
@@ -46,6 +50,16 @@ function initializeConnection() {
 // Initialize on module load (client-side only)
 if (typeof window !== 'undefined') {
   initializeConnection();
+
+  // If we have an env token but no saved user, try to auto-connect
+  const connection = gitlabConnectionAtom.get();
+
+  if (envToken && !connection.user) {
+    // Small delay to ensure stores are ready
+    setTimeout(() => {
+      gitlabConnectionStore.autoConnect().catch(console.error);
+    }, 1000);
+  }
 }
 
 // Computed store for checking if connected
@@ -64,7 +78,7 @@ export const gitlabStats = computed(gitlabConnectionAtom, (connection) => connec
 export const gitlabUrl = computed(gitlabUrlAtom, (url) => url);
 
 class GitLabConnectionStore {
-  async connect(token: string, gitlabUrl = 'https://gitlab.com') {
+  async connect(token: string, gitlabUrl = 'https://gitlab.com', sshPort?: number) {
     try {
       const apiService = new GitLabApiService(token, gitlabUrl);
 
@@ -77,12 +91,16 @@ class GitLabConnectionStore {
         token,
         tokenType: 'personal-access-token',
         gitlabUrl,
+        sshPort,
       });
+
+      // Get domain for cookie
+      const domain = new URL(gitlabUrl).hostname;
 
       // Set cookies for client-side access
       Cookies.set('gitlabUsername', user.username);
       Cookies.set('gitlabToken', token);
-      Cookies.set('git:gitlab.com', JSON.stringify({ username: user.username, password: token }));
+      Cookies.set(`git:${domain}`, JSON.stringify({ username: user.username, password: token }));
       Cookies.set('gitlabUrl', gitlabUrl);
 
       // Store connection details in localStorage
@@ -93,6 +111,7 @@ class GitLabConnectionStore {
           token,
           tokenType: 'personal-access-token',
           gitlabUrl,
+          sshPort,
         }),
       );
 
@@ -237,7 +256,7 @@ class GitLabConnectionStore {
     }
 
     try {
-      const apiService = new GitLabApiService(envToken);
+      const apiService = new GitLabApiService(envToken, envUrl);
       const user = await apiService.getUser();
 
       // Update state
@@ -245,14 +264,18 @@ class GitLabConnectionStore {
         user,
         token: envToken,
         tokenType: 'personal-access-token',
-        gitlabUrl: 'https://gitlab.com',
+        gitlabUrl: envUrl,
+        sshPort: envSshPort,
       });
+
+      // Get domain for cookie
+      const domain = new URL(envUrl).hostname;
 
       // Set cookies for client-side access
       Cookies.set('gitlabUsername', user.username);
       Cookies.set('gitlabToken', envToken);
-      Cookies.set('git:gitlab.com', JSON.stringify({ username: user.username, password: envToken }));
-      Cookies.set('gitlabUrl', 'https://gitlab.com');
+      Cookies.set(`git:${domain}`, JSON.stringify({ username: user.username, password: envToken }));
+      Cookies.set('gitlabUrl', envUrl);
 
       // Store connection details in localStorage
       localStorage.setItem(
@@ -261,7 +284,8 @@ class GitLabConnectionStore {
           user,
           token: envToken,
           tokenType: 'personal-access-token',
-          gitlabUrl: 'https://gitlab.com',
+          gitlabUrl: envUrl,
+          sshPort: envSshPort,
         }),
       );
 

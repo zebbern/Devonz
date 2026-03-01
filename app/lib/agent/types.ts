@@ -1,7 +1,7 @@
 /**
  * Agent Tools Type Definitions
  *
- * Type definitions for the Devonz AI Agent Mode tools and execution.
+ * Type definitions for the Alinma coder AI Agent Mode tools and execution.
  */
 
 /**
@@ -213,7 +213,7 @@ export interface SearchCodeResult {
  * Agent tool definition
  */
 export interface AgentToolDefinition<TParams = Record<string, unknown>, TResult = unknown> {
-  /** Tool name (devonz_* namespace) */
+  /** Tool name (alinma_coder_* namespace) */
   name: string;
 
   /** Human-readable description for LLM */

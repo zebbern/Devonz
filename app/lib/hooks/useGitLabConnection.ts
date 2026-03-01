@@ -18,7 +18,7 @@ export interface ConnectionState {
 }
 
 export interface UseGitLabConnectionReturn extends ConnectionState {
-  connect: (token: string, gitlabUrl?: string) => Promise<void>;
+  connect: (token: string, gitlabUrl?: string, sshPort?: number) => Promise<void>;
   disconnect: () => void;
   refreshConnection: () => Promise<void>;
   testConnection: () => Promise<boolean>;
@@ -121,7 +121,7 @@ export function useGitLabConnection(): UseGitLabConnectionReturn {
     }
   }, []);
 
-  const connect = useCallback(async (token: string, gitlabUrl = 'https://gitlab.com') => {
+  const connect = useCallback(async (token: string, gitlabUrl = 'https://gitlab.com', sshPort?: number) => {
     if (!token.trim()) {
       setError('Token is required');
       return;
@@ -134,7 +134,7 @@ export function useGitLabConnection(): UseGitLabConnectionReturn {
       logger.debug('Calling GitLab store connect method...');
 
       // Use the store's connect method which handles everything properly
-      const result = await gitlabConnectionStore.connect(token, gitlabUrl);
+      const result = await gitlabConnectionStore.connect(token, gitlabUrl, sshPort);
 
       if (!result.success) {
         throw new Error(result.error || 'Connection failed');

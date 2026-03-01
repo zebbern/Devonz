@@ -111,7 +111,7 @@ export function useDataOperations({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'devonz-settings.json';
+      a.download = 'alinma-coder-settings.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -206,7 +206,7 @@ export function useDataOperations({
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `devonz-settings-${categoryIds.join('-')}.json`;
+        a.download = `alinma-coder-settings-${categoryIds.join('-')}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -332,7 +332,7 @@ export function useDataOperations({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'devonz-chats.json';
+      a.download = 'alinma-coder-chats.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -443,7 +443,7 @@ export function useDataOperations({
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'devonz-selected-chats.json';
+        a.download = 'alinma-coder-selected-chats.json';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -944,7 +944,7 @@ export function useDataOperations({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'devonz-api-keys-template.json';
+      a.download = 'alinma-coder-api-keys-template.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1019,7 +1019,7 @@ export function useDataOperations({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'devonz-api-keys.json';
+      a.download = 'alinma-coder-api-keys.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

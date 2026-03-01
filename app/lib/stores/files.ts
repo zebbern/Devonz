@@ -87,18 +87,18 @@ export class FilesStore {
     // Load deleted paths from localStorage if available
     try {
       if (typeof localStorage !== 'undefined') {
-        const deletedPathsJson = localStorage.getItem('devonz-deleted-paths');
+        const deletedPathsJson = localStorage.getItem('alinma_coder-deleted-paths');
 
         if (deletedPathsJson) {
           const deletedPaths = JSON.parse(deletedPathsJson);
 
           if (Array.isArray(deletedPaths)) {
-            deletedPaths.forEach((path) => this.#deletedPaths.add(path));
+            this.#deletedPaths = new Set(deletedPaths);
           }
         }
       }
     } catch (error) {
-      logger.error('Failed to load deleted paths from localStorage', error);
+      console.error('Error loading deleted paths:', error);
     }
 
     // Load locked files from localStorage

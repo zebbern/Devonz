@@ -96,7 +96,7 @@ export const Artifact = memo(({ artifactId }: ArtifactProps) => {
         }}
       >
         {/* Header - Glossy dark style */}
-        <button
+        {/* <button
           className="flex items-center justify-between w-full px-4 py-3 hover:bg-white/5 transition-colors"
           onClick={toggleActions}
           style={{ background: 'rgba(255,255,255,0.02)' }}
@@ -112,7 +112,7 @@ export const Artifact = memo(({ artifactId }: ArtifactProps) => {
           >
             <div className="i-ph:caret-down" />
           </div>
-        </button>
+        </button> */}
 
         {/* Collapsible Actions List */}
         <AnimatePresence>
