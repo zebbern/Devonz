@@ -158,7 +158,7 @@
     "pnpm": "^9.14.4",
     "prettier": "^3.8.1",
     "rollup-plugin-visualizer": "^7.0.0",
-    "sass-embedded": "^1.81.0",
+    "sass-embedded": "^1.98.0",
     "typescript": "^5.9.3",
     "unified": "^11.0.5",
     "unocss": "^0.61.9",
