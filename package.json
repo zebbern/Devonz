@@ -116,7 +116,7 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.3.1",
-    "react-markdown": "^9.0.1",
+    "react-markdown": "^10.1.0",
     "react-qrcode-logo": "^3.0.0",
     "react-resizable-panels": "^2.1.7",
     "react-toastify": "^10.0.6",
