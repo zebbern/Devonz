@@ -188,5 +188,15 @@
     "githubRepo": "devonz-templates/skydda-ai-sentinel",
     "tags": ["ai", "security", "sentinel", "product"],
     "icon": "i-ph:shield-check-duotone"
-  }
+  },
+  {
+  "id": "gemini-next-chat",
+  "name":"Gemini next chat"
+  "description": "AI chat assistant powerd by gemini ai",
+  "category":"ai-app",
+  "vercelurl": "https://gemini-template-chat-zebbern.vercel.app",
+  "githubRepo":"u14app/gemini-next-chat",
+  "tags": ["ai", "chat", "gemini", "voice chat"],
+  "icon": "i-ph:sparkle-duotone"
+  } 
 ]

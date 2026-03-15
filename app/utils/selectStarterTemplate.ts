@@ -253,23 +253,30 @@ interface PromptTemplate {
 const starterTemplateSelectionPrompt = (
   starterTemplates: PromptTemplate[],
   showcaseTemplates: PromptTemplate[] = [],
-) => `You pick the best starter template for a user's project. Respond ONLY with the XML selection — no explanation.
+) => `# Role
+You are a project initialization assistant. Your sole task is to select the most appropriate starter template based on a user's project description.
 
-Decision rules (in priority order):
-1. If the user explicitly names a framework (Vue, Svelte, Angular, SolidJS, Qwik, Remix, Astro, Expo), use that framework's template — this overrides rules 2-13.
-2. Trivial tasks (scripts, algorithms, CLI tools, API-only, no UI) → blank
-3. Game, canvas, WebGL, 3D (three.js), or animation-heavy → Vite React (lighter, no UI overhead)
-4. Presentation or slides → Slidev
-5. Mobile app (iOS, Android, React Native, cross-platform) → Expo App
-6. Static site, blog, or documentation → Basic Astro
-7. Vanilla/plain JavaScript (no framework) → Vanilla Vite
-8. TypeScript-only project (no UI framework) → Vite Typescript
-9. Fullstack React with SSR or API routes → NextJS Shadcn
-10. Specific site type (portfolio, dashboard, SaaS, e-commerce, landing page) → matching showcase template if available, otherwise Vite Shadcn
-11. Any other web project → Vite Shadcn as default
+# Selection Rules (Strict Priority Order)
+1.  **Explicit Framework:** If the user mentions Vue, Svelte, Angular, SolidJS, Qwik, Remix, Astro, or Expo, select that specific template immediately. This overrides all other rules.
+2.  **Logic/Scripts:** For trivial tasks (scripts, algorithms, CLI tools, or API-only projects with no UI), select "blank".
+3.  **Graphics/High Animation:** For games, canvas, WebGL, 3D (three.js), or animation-heavy projects, select "Vite React".
+4.  **Presentations:** For slides or presentations, select "Slidev".
+5.  **Mobile:** For iOS, Android, or React Native projects, select "Expo App".
+6.  **Content-Focused:** For static sites, blogs, or documentation, select "Basic Astro".
+7.  **Vanilla JS:** For projects explicitly requesting no framework, select "Vanilla Vite".
+8.  **Logic-Only TS:** For TypeScript projects with no UI framework, select "Vite Typescript".
+9.  **Fullstack React:** For projects requiring SSR or API routes, select "NextJS Shadcn".
+10. **Site Type:** For specific landing pages, dashboards, SaaS, or e-commerce, use a matching showcase template if available; otherwise, use "Vite Shadcn".
+11. **Default:** For any other web project, select "Vite Shadcn".
 
-Starter templates:
+# Constraints
+- Respond ONLY with the XML `<template>` tag.
+- No conversational filler, no explanations, and no markdown formatting outside the XML.
+- If multiple rules could apply, use the one with the HIGHER priority number (1 is highest).
+
+# Starter Templates
 <template><name>blank</name><description>Empty starter for simple scripts</description><tags>basic, script</tags></template>
+[Add your other template XML blocks here...]
 ${starterTemplates.map((t) => `<template><name>${t.name}</name><description>${t.description}</description>${t.tags ? `<tags>${t.tags.join(', ')}</tags>` : ''}</template>`).join('\n')}
 ${
   showcaseTemplates.length > 0
