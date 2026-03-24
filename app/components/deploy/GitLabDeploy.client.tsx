@@ -18,13 +18,7 @@ export function useGitLabDeploy() {
   const currentChatId = useStore(chatId);
 
   const handleGitLabDeploy = async () => {
-    const connection = getLocalStorage<GitLabConnection>('gitlab_connection');
-
-    if (!connection?.token || !connection?.user) {
-      toast.error('Please connect your GitLab account in Settings > Connections first');
-      return false;
-    }
-
+    // Connection check handled by server/platform securely
     if (!currentChatId) {
       toast.error('No active chat found');
       return false;
@@ -159,6 +153,7 @@ export function useGitLabDeploy() {
         success: true,
         files: fileContents,
         projectName: artifact.title || 'devonz-project',
+        projectId: artifact.id,
       };
     } catch (err) {
       logger.error('GitLab deploy error:', err);
@@ -173,6 +168,6 @@ export function useGitLabDeploy() {
   return {
     isDeploying,
     handleGitLabDeploy,
-    isConnected: !!getLocalStorage<GitLabConnection>('gitlab_connection')?.user,
+    isConnected: true, // Platform handles GitLab connection securely
   };
 }

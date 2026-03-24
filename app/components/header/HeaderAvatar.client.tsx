@@ -5,20 +5,46 @@ import { motion } from 'framer-motion';
 import { profileStore } from '~/lib/stores/profile';
 import { classNames } from '~/utils/classNames';
 import type { TabType } from '~/components/@settings/core/types';
-
-const ControlPanel = lazy(() =>
-  import('~/components/@settings/core/ControlPanel').then((m) => ({ default: m.ControlPanel })),
-);
+import { ControlPanel } from '~/components/@settings/core/ControlPanel';
+import { authStore, clearAuth } from '~/lib/stores/auth';
+import { supabase } from '~/lib/supabase.client';
+import { Link, useNavigate } from '@remix-run/react';
+import { toast } from 'react-toastify';
 
 export function HeaderAvatar() {
   const profile = useStore(profileStore);
+  const { user } = useStore(authStore);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [initialTab, setInitialTab] = useState<TabType | undefined>(undefined);
+  const navigate = useNavigate();
 
   const handleOpenSettings = (tab?: TabType) => {
     setInitialTab(tab);
     setIsSettingsOpen(true);
   };
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      clearAuth();
+      toast.success('Successfully logged out');
+      navigate('/login');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to sign out');
+    }
+  };
+
+  if (!user) {
+    return (
+      <Link
+        to="/login"
+        className="px-4 py-1.5 text-sm font-medium text-bolt-elements-textPrimary bg-accent-500 hover:bg-accent-600 rounded-lg transition-colors"
+      >
+        Sign In
+      </Link>
+    );
+  }
 
   return (
     <>
@@ -113,6 +139,22 @@ export function HeaderAvatar() {
             >
               <div className="i-ph:bug w-4 h-4 text-devonz-elements-textSecondary" />
               Report Bug
+            </DropdownMenu.Item>
+
+            <div className="my-1 border-t border-bolt-elements-borderColor" />
+
+            <DropdownMenu.Item
+              className={classNames(
+                'flex items-center gap-2 px-3 py-2',
+                'text-sm text-red-500',
+                'hover:bg-red-500/10',
+                'cursor-pointer transition-colors',
+                'outline-none',
+              )}
+              onClick={handleSignOut}
+            >
+              <div className="i-ph:sign-out w-4 h-4 text-red-500" />
+              Sign Out
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>

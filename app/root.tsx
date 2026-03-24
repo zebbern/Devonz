@@ -8,6 +8,10 @@ import { stripIndents } from './utils/stripIndent';
 import { lazy, Suspense, useEffect } from 'react';
 import { useSentryUser } from './hooks/useSentryUser';
 import { cssTransition, ToastContainer } from 'react-toastify';
+import { supabase } from './lib/supabase.client';
+import { updateAuth } from './lib/stores/auth';
+import { updateProfile } from './lib/stores/profile';
+import { getProfile } from './lib/api/user';
 
 import reactToastifyStyles from 'react-toastify/dist/ReactToastify.css?url';
 import globalStyles from './styles/index.scss?url';
@@ -216,6 +220,49 @@ function App() {
       .catch((error) => {
         logStore.logError('Failed to initialize debug logging', error);
       });
+
+    // Supabase Auth Listener
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const user = session?.user ?? null;
+      updateAuth({ session, user, isLoading: false });
+
+      if (user) {
+        getProfile(user.id).then((profile) => {
+          if (profile) {
+            updateProfile({
+              name: profile.full_name || '',
+              nickname: profile.username || '',
+              email: user.email || '',
+              avatar: profile.avatar_url || '',
+            });
+          }
+        });
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const user = session?.user ?? null;
+      updateAuth({ session, user, isLoading: false });
+
+      if (user) {
+        getProfile(user.id).then((profile) => {
+          if (profile) {
+            updateProfile({
+              name: profile.full_name || '',
+              nickname: profile.username || '',
+              email: user.email || '',
+              avatar: profile.avatar_url || '',
+            });
+          }
+        });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (

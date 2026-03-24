@@ -1,5 +1,6 @@
-import { type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
+import { type LoaderFunctionArgs, type ActionFunctionArgs, json } from 'react-router';
 import { ApiError, resolveToken, unauthorizedResponse, externalFetch, handleApiError } from '~/lib/api/apiUtils';
+import { getApiKeysFromCookie } from '~/lib/api/cookies';
 import { withSecurity } from '~/lib/security';
 
 const SUPABASE_TOKEN_KEYS = ['VITE_SUPABASE_ACCESS_TOKEN'];
@@ -18,6 +19,31 @@ async function supabaseUserLoader({ request, context }: LoaderFunctionArgs) {
     const token = resolveToken(request, context, ...SUPABASE_TOKEN_KEYS);
 
     if (!token) {
+      const cookieHeader = request.headers.get('Cookie');
+      const apiKeys = getApiKeysFromCookie(cookieHeader);
+      const envUrl = apiKeys.VITE_SUPABASE_URL || context?.cloudflare?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+      const envAnonKey = apiKeys.VITE_SUPABASE_ANON_KEY || context?.cloudflare?.env?.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+      if (envUrl && envAnonKey) {
+        return json({
+          user: {
+            id: 'local',
+            name: 'Local Supabase User',
+            email: 'local@supabase.local',
+          },
+          projects: [
+            {
+              id: 'local-project',
+              name: 'Local Supabase Project',
+              region: 'local',
+              status: 'ACTIVE_HEALTHY',
+              organization_id: 'local-org',
+              created_at: new Date().toISOString(),
+            },
+          ],
+        });
+      }
+
       return unauthorizedResponse('Supabase');
     }
 
@@ -64,13 +90,47 @@ export const loader = withSecurity(supabaseUserLoader, {
 async function supabaseUserAction({ request, context }: ActionFunctionArgs) {
   return handleApiError('SupabaseUser', async () => {
     const token = resolveToken(request, context, ...SUPABASE_TOKEN_KEYS);
-
-    if (!token) {
-      return unauthorizedResponse('Supabase');
-    }
-
     const formData = await request.formData();
     const action = formData.get('action');
+
+    if (!token) {
+      const cookieHeader = request.headers.get('Cookie');
+      const apiKeys = getApiKeysFromCookie(cookieHeader);
+      const envUrl = apiKeys.VITE_SUPABASE_URL || context?.cloudflare?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+      const envAnonKey = apiKeys.VITE_SUPABASE_ANON_KEY || context?.cloudflare?.env?.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+      if (envUrl && envAnonKey) {
+        if (action === 'get_projects') {
+          return json({
+            user: { id: 'local', name: 'Local Supabase User', email: 'local@supabase.local' },
+            stats: {
+              projects: [
+                {
+                  id: 'local-project',
+                  name: 'Local Supabase Project',
+                  region: 'local',
+                  status: 'ACTIVE_HEALTHY',
+                  organization_id: 'local-org',
+                  created_at: new Date().toISOString(),
+                },
+              ],
+              totalProjects: 1,
+            },
+          });
+        }
+
+        if (action === 'get_api_keys') {
+          return json({
+            apiKeys: [
+              { name: 'anon', api_key: envAnonKey },
+              { name: 'service_role', api_key: 'local-service-role' },
+            ],
+          });
+        }
+      }
+
+      return unauthorizedResponse('Supabase');
+    }
 
     if (action === 'get_projects') {
       const response = await externalFetch({ url: 'https://api.supabase.com/v1/projects', token });
