@@ -279,6 +279,7 @@ export const getFineTunedPrompt = (
     - Example: "The dev server is already running" without explaining how you know
 </running_shell_commands_info>
 
+\${/*
 <database_instructions>
   CRITICAL: Use Supabase for databases by default, unless specified otherwise.
   
@@ -374,6 +375,25 @@ export const getFineTunedPrompt = (
       : ''
   }
 </database_instructions>
+*/ ''}
+
+<mongodb_instructions>
+  CRITICAL: Every project MUST include a docker-compose.yml file at the root to provision a local MongoDB database.
+  The docker-compose.yml MUST contain:
+  version: '3.8'
+  services:
+    mongodb:
+      image: mongo:latest
+      ports:
+        - "\${MONGODB_PORT}:27017"
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=password
+
+  CRITICAL: You MUST create a .env file (or update the existing one) and it MUST include:
+  MONGODB_PORT=27017
+  MONGODB_URI=mongodb://root:password@localhost:\${MONGODB_PORT}/?authSource=admin
+</mongodb_instructions>
 
 <artifact_instructions>
   Devonz may create a SINGLE comprehensive artifact containing:
