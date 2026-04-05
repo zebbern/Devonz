@@ -148,13 +148,12 @@ export function DataTab() {
 
   // Internal tab state for organizing content
   type DataTabSection = 'chats' | 'settings' | 'api-keys' | 'data-usage';
-
-  const [activeSection, setActiveSection] = useState<DataTabSection>('chats');
+  const [activeSection, setActiveSection] = useState<DataTabSection>('data-usage');
 
   const tabSections: { id: DataTabSection; label: string }[] = [
-    { id: 'chats', label: 'Chats' },
-    { id: 'settings', label: 'Settings' },
-    { id: 'api-keys', label: 'API Keys' },
+    // { id: 'chats', label: 'Chats' },
+    // { id: 'settings', label: 'Settings' },
+    // { id: 'api-keys', label: 'API Keys' },
     { id: 'data-usage', label: 'Data Usage' },
   ];
 
@@ -236,23 +235,25 @@ export function DataTab() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-2 border-b border-devonz-elements-borderColor pb-2 mb-6">
-        {tabSections.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveSection(tab.id)}
-            className="px-4 py-2 text-sm font-medium rounded-t-lg transition-colors"
-            style={{
-              backgroundColor: activeSection === tab.id ? 'var(--devonz-elements-bg-depth-3)' : 'transparent',
-              color:
-                activeSection === tab.id ? 'var(--devonz-elements-textPrimary)' : 'var(--devonz-elements-textTertiary)',
-              borderBottom: activeSection === tab.id ? '2px solid #06B6D4' : '2px solid transparent',
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {tabSections.length > 1 && (
+        <div className="flex gap-2 border-b border-devonz-elements-borderColor pb-2 mb-6">
+          {tabSections.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveSection(tab.id)}
+              className="px-4 py-2 text-sm font-medium rounded-t-lg transition-colors"
+              style={{
+                backgroundColor: activeSection === tab.id ? 'var(--devonz-elements-bg-depth-3)' : 'transparent',
+                color:
+                  activeSection === tab.id ? 'var(--devonz-elements-textPrimary)' : 'var(--devonz-elements-textTertiary)',
+                borderBottom: activeSection === tab.id ? '2px solid #06B6D4' : '2px solid transparent',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Reset Settings Confirmation Dialog */}
       <ConfirmationDialog

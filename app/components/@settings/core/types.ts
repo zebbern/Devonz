@@ -8,8 +8,6 @@ export type TabType =
   | 'local-providers'
   | 'github'
   | 'gitlab'
-  | 'netlify'
-  | 'vercel'
   | 'supabase'
   | 'event-logs'
   | 'mcp'

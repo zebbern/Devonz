@@ -16,22 +16,7 @@ const GitLabIcon: React.ComponentType<{ className?: string }> = ({ className }) 
   </svg>
 );
 
-// Vercel icon component (custom SVG - no Phosphor equivalent)
-const VercelIcon: React.ComponentType<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 24 24" className={classNames('w-4 h-4', className)}>
-    <path fill="currentColor" d="M12 2L2 19.777h20L12 2z" />
-  </svg>
-);
 
-// Netlify icon component (custom SVG - no Phosphor equivalent)
-const NetlifyIcon: React.ComponentType<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 24 24" className={classNames('w-4 h-4', className)}>
-    <path
-      fill="currentColor"
-      d="M16.934 8.519a1.044 1.044 0 0 1 .303-.23l2.349-1.045a.983.983 0 0 1 .905 0c.264.12.49.328.651.599l.518 1.065c.17.35.17.761 0 1.11l-.518 1.065a1.119 1.119 0 0 1-.651.599l-2.35 1.045a1.013 1.013 0 0 1-.904 0l-2.35-1.045a1.119 1.119 0 0 1-.651-.599L13.718 9.02a1.2 1.2 0 0 1 0-1.11l.518-1.065a1.119 1.119 0 0 1 .651-.599l2.35-1.045a.983.983 0 0 1 .697-.061zm-6.051 5.751a1.044 1.044 0 0 1 .303-.23l2.349-1.045a.983.983 0 0 1 .905 0c.264.12.49.328.651.599l.518 1.065c.17.35.17.761 0 1.11l-.518 1.065a1.119 1.119 0 0 1-.651.599l-2.35 1.045a1.013 1.013 0 0 1-.904 0l-2.35-1.045a1.119 1.119 0 0 1-.651-.599l-.518-1.065a1.2 1.2 0 0 1 0-1.11l.518-1.065a1.119 1.119 0 0 1 .651-.599l2.35-1.045a.983.983 0 0 1 .697-.061z"
-    />
-  </svg>
-);
 
 // Supabase icon component (custom SVG - no Phosphor equivalent)
 const SupabaseIcon: React.ComponentType<{ className?: string }> = ({ className }) => (
@@ -53,8 +38,6 @@ export const TAB_ICONS: Record<TabType, React.ComponentType<{ className?: string
   'local-providers': createIconComponent('i-ph:laptop'),
   github: createIconComponent('i-ph:github-logo'),
   gitlab: GitLabIcon,
-  netlify: NetlifyIcon,
-  vercel: VercelIcon,
   supabase: SupabaseIcon,
   'event-logs': createIconComponent('i-ph:list'),
   mcp: createIconComponent('i-ph:wrench'),
@@ -71,8 +54,6 @@ export const TAB_LABELS: Record<TabType, string> = {
   'local-providers': 'Local Providers',
   github: 'GitHub',
   gitlab: 'GitLab',
-  netlify: 'Netlify',
-  vercel: 'Vercel',
   supabase: 'Supabase',
   'event-logs': 'Event Logs',
   mcp: 'MCP Servers',
@@ -87,8 +68,6 @@ export const DEFAULT_TAB_CONFIG = [
   { id: 'local-providers', visible: true, window: 'user' as const, order: 3 },
   { id: 'github', visible: true, window: 'user' as const, order: 4 },
   { id: 'gitlab', visible: true, window: 'user' as const, order: 5 },
-  { id: 'netlify', visible: true, window: 'user' as const, order: 6 },
-  { id: 'vercel', visible: true, window: 'user' as const, order: 7 },
   { id: 'supabase', visible: true, window: 'user' as const, order: 8 },
   { id: 'notifications', visible: true, window: 'user' as const, order: 9 },
   { id: 'event-logs', visible: true, window: 'user' as const, order: 10 },
@@ -115,7 +94,7 @@ export const SIDEBAR_CATEGORIES: SidebarCategoryConfig[] = [
     id: 'services',
     label: 'Services',
     icon: 'i-ph:plugs-connected',
-    tabs: ['github', 'gitlab', 'netlify', 'vercel', 'supabase'],
+    tabs: ['github', 'gitlab', 'supabase'],
   },
   {
     id: 'system',

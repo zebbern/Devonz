@@ -12,6 +12,7 @@ import { DialogTitle } from '~/components/ui/Dialog';
 import { classNames } from '~/utils/classNames';
 import { createScopedLogger } from '~/utils/logger';
 import { PanelErrorBoundary } from '~/components/ui/PanelErrorBoundary';
+import { isTabEnabledViaEnv } from '~/components/@settings/utils/tab-helpers';
 
 const logger = createScopedLogger('ControlPanel');
 
@@ -27,8 +28,6 @@ const EventLogsTab = lazy(() =>
 const GitHubTab = lazy(() => import('~/components/@settings/tabs/github/GitHubTab'));
 const GitLabTab = lazy(() => import('~/components/@settings/tabs/gitlab/GitLabTab'));
 const SupabaseTab = lazy(() => import('~/components/@settings/tabs/supabase/SupabaseTab'));
-const VercelTab = lazy(() => import('~/components/@settings/tabs/vercel/VercelTab'));
-const NetlifyTab = lazy(() => import('~/components/@settings/tabs/netlify/NetlifyTab'));
 const CloudProvidersTab = lazy(() => import('~/components/@settings/tabs/providers/cloud/CloudProvidersTab'));
 const LocalProvidersTab = lazy(() => import('~/components/@settings/tabs/providers/local/LocalProvidersTab'));
 const McpTab = lazy(() => import('~/components/@settings/tabs/mcp/McpTab'));
@@ -85,6 +84,11 @@ export const ControlPanel = ({ open, onClose, initialTab }: ControlPanelProps) =
           return false;
         }
 
+        // Apply environment variable check
+        if (!isTabEnabledViaEnv(tab.id as string)) {
+          return false;
+        }
+
         return tab.visible && tab.window === 'user';
       })
       .sort((a, b) => a.order - b.order);
@@ -130,8 +134,6 @@ export const ControlPanel = ({ open, onClose, initialTab }: ControlPanelProps) =
       github: <GitHubTab />,
       gitlab: <GitLabTab />,
       supabase: <SupabaseTab />,
-      vercel: <VercelTab />,
-      netlify: <NetlifyTab />,
       'event-logs': <EventLogsTab />,
       mcp: <McpTab />,
       'project-memory': <ProjectMemoryTab />,
@@ -153,8 +155,6 @@ export const ControlPanel = ({ open, onClose, initialTab }: ControlPanelProps) =
       case 'github':
       case 'gitlab':
       case 'supabase':
-      case 'vercel':
-      case 'netlify':
         return hasConnectionIssues;
       default:
         return false;
@@ -175,8 +175,6 @@ export const ControlPanel = ({ open, onClose, initialTab }: ControlPanelProps) =
       case 'github':
       case 'gitlab':
       case 'supabase':
-      case 'vercel':
-      case 'netlify':
         acknowledgeIssue();
         break;
     }
