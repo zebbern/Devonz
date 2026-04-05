@@ -1,4 +1,4 @@
-import React, { useState, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { clientLazy } from '~/utils/react';
 import { classNames } from '~/utils/classNames';
 import { PROVIDER_LIST } from '~/utils/constants';
@@ -87,6 +87,35 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
     setSettingsInitialTab(tab as TabType | undefined);
     setIsSettingsOpen(true);
   }, []);
+
+  const [isEnvKeySet, setIsEnvKeySet] = useState(false);
+
+  // Check if API key is set via environment variable
+  const checkEnvApiKey = useCallback(async () => {
+    if (!props.provider?.name) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/check-env-key?provider=${encodeURIComponent(props.provider.name)}`);
+      const data = await response.json();
+      setIsEnvKeySet((data as { isSet: boolean }).isSet);
+    } catch (error) {
+      setIsEnvKeySet(false);
+    }
+  }, [props.provider?.name]);
+
+  useEffect(() => {
+    checkEnvApiKey();
+  }, [checkEnvApiKey]);
+
+  // Chat toolbar item visibility determined by environment variables
+  const showThemeSelector = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_THEME_SELECTOR === 'true' : false;
+  const showMcpTools = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_MCP_TOOLS === 'true' : false;
+  const showAttachments = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_ATTACHMENTS === 'true' : false;
+  const showEnhancement = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_ENHANCEMENT === 'true' : false;
+  const showSpeech = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_SPEECH === 'true' : false;
+  const showModelSelector = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_MODEL_SELECTOR === 'true' : false;
 
   return (
     <div
@@ -309,45 +338,52 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
                 setPlanMode={props.setPlanMode}
               />
               <AgentToggle />
-              <IconButton
-                title="Enhance prompt"
-                disabled={props.input.length === 0 || props.enhancingPrompt}
-                className={classNames('transition-all', props.enhancingPrompt ? 'opacity-100' : '')}
-                onClick={() => {
-                  props.enhancePrompt?.();
-                  toast.success('Prompt enhanced!');
-                }}
-              >
-                {props.enhancingPrompt ? (
-                  <div className="i-svg-spinners:90-ring-with-bg text-devonz-elements-loader-progress text-xl animate-spin"></div>
-                ) : (
-                  <div className="i-devonz:stars text-xl"></div>
-                )}
-              </IconButton>
 
-              <SpeechRecognitionButton
-                isListening={props.isListening}
-                onStart={props.startListening}
-                onStop={props.stopListening}
-                disabled={props.isStreaming}
-              />
+              {showEnhancement && (
+                <IconButton
+                  title="Enhance prompt"
+                  disabled={props.input.length === 0 || props.enhancingPrompt}
+                  className={classNames('transition-all', props.enhancingPrompt ? 'opacity-100' : '')}
+                  onClick={() => {
+                    props.enhancePrompt?.();
+                    toast.success('Prompt enhanced!');
+                  }}
+                >
+                  {props.enhancingPrompt ? (
+                    <div className="i-svg-spinners:90-ring-with-bg text-devonz-elements-loader-progress text-xl animate-spin"></div>
+                  ) : (
+                    <div className="i-devonz:stars text-xl"></div>
+                  )}
+                </IconButton>
+              )}
+
+              {showSpeech && (
+                <SpeechRecognitionButton
+                  isListening={props.isListening}
+                  onStart={props.startListening}
+                  onStop={props.stopListening}
+                  disabled={props.isStreaming}
+                />
+              )}
 
               {/* Model Selector Button */}
-              <div className="relative">
-                <IconButton
-                  title="Select Model"
-                  className={classNames('transition-all flex items-center gap-1', {
-                    'bg-devonz-elements-item-backgroundAccent text-devonz-elements-item-contentAccent':
-                      isModelSelectorOpen,
-                    'bg-devonz-elements-item-backgroundDefault text-devonz-elements-item-contentDefault':
-                      !isModelSelectorOpen,
-                  })}
-                  onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
-                  disabled={!props.providerList || props.providerList.length === 0}
-                >
-                  <div className="i-ph:robot text-lg" />
-                </IconButton>
-              </div>
+              {showModelSelector && (
+                <div className="relative">
+                  <IconButton
+                    title="Select Model"
+                    className={classNames('transition-all flex items-center gap-1', {
+                      'bg-devonz-elements-item-backgroundAccent text-devonz-elements-item-contentAccent':
+                        isModelSelectorOpen,
+                      'bg-devonz-elements-item-backgroundDefault text-devonz-elements-item-contentDefault':
+                        !isModelSelectorOpen,
+                    })}
+                    onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
+                    disabled={!props.providerList || props.providerList.length === 0}
+                  >
+                    <div className="i-ph:robot text-lg" />
+                  </IconButton>
+                </div>
+              )}
 
               {/* Divider */}
               <div className="w-px h-4 bg-devonz-elements-borderColor mx-0.5" />
@@ -389,11 +425,15 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
                 transition={{ duration: 0.2, ease: 'easeInOut' }}
               >
                 <Suspense>
-                  <ColorSchemeDialog designScheme={props.designScheme} setDesignScheme={props.setDesignScheme} />
-                  <McpTools />
-                  <IconButton title="Upload file" className="transition-all" onClick={() => props.handleFileUpload()}>
-                    <div className="i-ph:paperclip text-xl"></div>
-                  </IconButton>
+                  {showThemeSelector && (
+                    <ColorSchemeDialog designScheme={props.designScheme} setDesignScheme={props.setDesignScheme} />
+                  )}
+                  {showMcpTools && <McpTools />}
+                  {showAttachments && (
+                    <IconButton title="Upload file" className="transition-all" onClick={() => props.handleFileUpload()}>
+                      <div className="i-ph:paperclip text-xl"></div>
+                    </IconButton>
+                  )}
                   <WebSearch
                     onSearchResult={(result) => props.onWebSearchResult?.(result)}
                     disabled={props.isStreaming}
