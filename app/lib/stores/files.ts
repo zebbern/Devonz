@@ -1,7 +1,7 @@
 import type { RuntimeProvider, WatchEvent } from '~/lib/runtime/runtime-provider';
 import { getEncoding } from 'istextorbinary';
 import { map, type MapStore } from 'nanostores';
-import { Buffer } from 'node:buffer';
+
 import { path, toRelativePath } from '~/utils/path';
 import { WORK_DIR } from '~/utils/constants';
 import { computeFileModifications } from '~/utils/diff';

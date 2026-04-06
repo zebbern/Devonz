@@ -1,3 +1,13 @@
+import { Buffer } from 'buffer';
+import * as util from 'util';
+
+if (typeof window !== 'undefined') {
+  (window as any).Buffer = Buffer;
+  (window as any).global = window;
+  (window as any).process = { env: { NODE_ENV: import.meta.env.MODE } };
+  (window as any).util = util;
+}
+
 import * as Sentry from '@sentry/react';
 import { HydratedRouter } from 'react-router/dom';
 import { startTransition } from 'react';

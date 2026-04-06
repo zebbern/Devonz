@@ -1,21 +1,39 @@
 // Browser-compatible path utilities
-import type { ParsedPath } from 'path';
-import pathBrowserify from 'path-browserify';
+import type { ParsedPath } from 'node:path';
+import nodePath from 'node:path';
+
+const isServer = typeof window === 'undefined';
 
 /**
- * A browser-compatible path utility that mimics Node's path module
- * Using path-browserify for consistent behavior in browser environments
+ * A browser-compatible path utility that mimics Node's path module.
+ * Uses native node:path on the server and path-browserify (via dynamic import) in the browser.
  */
+let browserPath: any = null;
+
+// Only attempt to load path-browserify on the client
+if (!isServer) {
+  import('path-browserify').then((mod) => {
+    browserPath = mod.default;
+  });
+}
+
 export const path = {
-  join: (...paths: string[]): string => pathBrowserify.join(...paths),
-  dirname: (path: string): string => pathBrowserify.dirname(path),
-  basename: (path: string, ext?: string): string => pathBrowserify.basename(path, ext),
-  extname: (path: string): string => pathBrowserify.extname(path),
-  relative: (from: string, to: string): string => pathBrowserify.relative(from, to),
-  isAbsolute: (path: string): boolean => pathBrowserify.isAbsolute(path),
-  normalize: (path: string): string => pathBrowserify.normalize(path),
-  parse: (path: string): ParsedPath => pathBrowserify.parse(path),
-  format: (pathObject: ParsedPath): string => pathBrowserify.format(pathObject),
+  join: (...paths: string[]): string =>
+    isServer ? nodePath.join(...paths) : browserPath?.join(...paths) || paths.join('/'),
+  dirname: (p: string): string =>
+    isServer ? nodePath.dirname(p) : browserPath?.dirname(p) || p.split('/').slice(0, -1).join('/'),
+  basename: (p: string, ext?: string): string =>
+    isServer ? nodePath.basename(p, ext) : browserPath?.basename(p, ext) || p.split('/').pop() || '',
+  extname: (p: string): string =>
+    isServer ? nodePath.extname(p) : browserPath?.extname(p) || (p.includes('.') ? '.' + p.split('.').pop() : ''),
+  relative: (from: string, to: string): string =>
+    isServer ? nodePath.relative(from, to) : browserPath?.relative(from, to) || to,
+  isAbsolute: (p: string): boolean =>
+    isServer ? nodePath.isAbsolute(p) : browserPath?.isAbsolute(p) || p.startsWith('/'),
+  normalize: (p: string): string => (isServer ? nodePath.normalize(p) : browserPath?.normalize(p) || p),
+  parse: (p: string): ParsedPath => (isServer ? nodePath.parse(p) : browserPath?.parse(p) || ({} as ParsedPath)),
+  format: (pathObject: ParsedPath): string =>
+    isServer ? nodePath.format(pathObject) : browserPath?.format(pathObject) || '',
 } as const;
 
 /**
