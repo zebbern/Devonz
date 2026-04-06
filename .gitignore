@@ -51,3 +51,6 @@ docs/instructions/Roadmap.md
 !plan/*.md
 !README.md
 .qodo
+
+# React Router v7 generated files
+.react-router
