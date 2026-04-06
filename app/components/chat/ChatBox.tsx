@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useCallback, lazy, Suspense } from 'react';
 import { clientLazy } from '~/utils/react';
 import { classNames } from '~/utils/classNames';
 import { PROVIDER_LIST } from '~/utils/constants';
@@ -88,34 +88,27 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
     setIsSettingsOpen(true);
   }, []);
 
-  const [isEnvKeySet, setIsEnvKeySet] = useState(false);
-
-  // Check if API key is set via environment variable
-  const checkEnvApiKey = useCallback(async () => {
-    if (!props.provider?.name) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/check-env-key?provider=${encodeURIComponent(props.provider.name)}`);
-      const data = await response.json();
-      setIsEnvKeySet((data as { isSet: boolean }).isSet);
-    } catch (error) {
-      setIsEnvKeySet(false);
-    }
-  }, [props.provider?.name]);
-
-  useEffect(() => {
-    checkEnvApiKey();
-  }, [checkEnvApiKey]);
-
   // Chat toolbar item visibility determined by environment variables
-  const showThemeSelector = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_THEME_SELECTOR === 'true' : false;
-  const showMcpTools = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_MCP_TOOLS === 'true' : false;
-  const showAttachments = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_ATTACHMENTS === 'true' : false;
-  const showEnhancement = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_ENHANCEMENT === 'true' : false;
-  const showSpeech = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_SPEECH === 'true' : false;
-  const showModelSelector = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_MODEL_SELECTOR === 'true' : false;
+  const showThemeSelector =
+    typeof import.meta !== 'undefined' && import.meta.env
+      ? import.meta.env.VITE_SHOW_CHAT_THEME_SELECTOR === 'true'
+      : false;
+  const showMcpTools =
+    typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_MCP_TOOLS === 'true' : false;
+  const showAttachments =
+    typeof import.meta !== 'undefined' && import.meta.env
+      ? import.meta.env.VITE_SHOW_CHAT_ATTACHMENTS === 'true'
+      : false;
+  const showEnhancement =
+    typeof import.meta !== 'undefined' && import.meta.env
+      ? import.meta.env.VITE_SHOW_CHAT_ENHANCEMENT === 'true'
+      : false;
+  const showSpeech =
+    typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_CHAT_SPEECH === 'true' : false;
+  const showModelSelector =
+    typeof import.meta !== 'undefined' && import.meta.env
+      ? import.meta.env.VITE_SHOW_CHAT_MODEL_SELECTOR === 'true'
+      : false;
 
   return (
     <div
@@ -213,7 +206,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
         className={classNames('relative shadow-xs border border-devonz-elements-borderColor backdrop-blur rounded-lg')}
       >
         <textarea
-          ref={props.textareaRef}
+          ref={props.textareaRef as React.LegacyRef<HTMLTextAreaElement>}
           aria-label="Chat message input"
           className={classNames(
             'w-full pl-4 pt-4 pr-16 outline-none resize-none text-devonz-elements-textPrimary placeholder-devonz-elements-textTertiary bg-transparent text-sm',

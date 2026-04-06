@@ -89,7 +89,7 @@ function buildActionArgs(body: unknown) {
     body: JSON.stringify(body),
   });
 
-  return { request, params: {}, context: {} as any, unstable_pattern: '' };
+  return { request, params: {}, context: {} as any, unstable_url: new URL(request.url), unstable_pattern: '' };
 }
 
 function buildInvalidJsonArgs() {
@@ -99,7 +99,7 @@ function buildInvalidJsonArgs() {
     body: '{not valid json!!!',
   });
 
-  return { request, params: {}, context: {} as any, unstable_pattern: '' };
+  return { request, params: {}, context: {} as any, unstable_url: new URL(request.url), unstable_pattern: '' };
 }
 
 // -- Tests ------------------------------------------------------------------

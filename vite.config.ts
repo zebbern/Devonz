@@ -44,6 +44,7 @@ export default defineConfig((config) => {
         // Provide empty shim for util/types in client builds
         'util/types': 'rollup-plugin-node-polyfills/polyfills/empty',
         'node:util/types': 'rollup-plugin-node-polyfills/polyfills/empty',
+        path: 'path-browserify',
       },
     },
     ssr: {
@@ -63,14 +64,14 @@ export default defineConfig((config) => {
     },
     plugins: [
       nodePolyfills({
-        include: ['buffer', 'process', 'util'],
+        include: ['buffer', 'process', 'util', 'path'],
         globals: {
           Buffer: true,
           process: true,
           global: true,
         },
         protocolImports: true,
-        exclude: ['child_process', 'fs', 'path', 'stream'],
+        exclude: ['child_process', 'fs', 'stream'],
       }),
       {
         name: 'buffer-polyfill',

@@ -84,7 +84,7 @@ const { loader, action } = await import('~/routes/api.db.chats');
 
 function buildLoaderArgs(url: string) {
   const request = new Request(`http://localhost${url}`, { method: 'GET' });
-  return { request, params: {}, context: {} as any, unstable_pattern: '' };
+  return { request, params: {}, context: {} as any, unstable_url: new URL(request.url), unstable_pattern: '' };
 }
 
 function buildActionArgs(body: unknown) {
@@ -93,7 +93,7 @@ function buildActionArgs(body: unknown) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  return { request, params: {}, context: {} as any, unstable_pattern: '' };
+  return { request, params: {}, context: {} as any, unstable_url: new URL(request.url), unstable_pattern: '' };
 }
 
 /*
@@ -188,7 +188,13 @@ describe('POST /api/db/chats', () => {
       headers: { 'Content-Type': 'application/json' },
       body: 'not valid json{{{',
     });
-    const response = await action({ request, params: {}, context: {} as any, unstable_pattern: '' });
+    const response = await action({
+      request,
+      params: {},
+      context: {} as any,
+      unstable_url: new URL(request.url),
+      unstable_pattern: '',
+    });
     expect(response.status).toBe(400);
 
     const data = await response.json();

@@ -2,6 +2,8 @@ import { atom } from 'nanostores';
 
 interface Profile {
   username: string;
+  name: string;
+  email: string;
   bio: string;
   avatar: string;
 }
@@ -14,10 +16,10 @@ if (storedProfile) {
   try {
     initialProfile = JSON.parse(storedProfile);
   } catch {
-    initialProfile = { username: '', bio: '', avatar: '' };
+    initialProfile = { username: '', name: '', email: '', bio: '', avatar: '' };
   }
 } else {
-  initialProfile = { username: '', bio: '', avatar: '' };
+  initialProfile = { username: '', name: '', email: '', bio: '', avatar: '' };
 }
 
 export const profileStore = atom<Profile>(initialProfile);

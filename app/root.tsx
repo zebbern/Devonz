@@ -231,7 +231,7 @@ function App() {
           if (profile) {
             updateProfile({
               name: profile.full_name || '',
-              nickname: profile.username || '',
+              username: profile.username || '',
               email: user.email || '',
               avatar: profile.avatar_url || '',
             });
@@ -251,7 +251,7 @@ function App() {
           if (profile) {
             updateProfile({
               name: profile.full_name || '',
-              nickname: profile.username || '',
+              username: profile.username || '',
               email: user.email || '',
               avatar: profile.avatar_url || '',
             });
@@ -275,7 +275,7 @@ function App() {
       </a>
       <Sentry.ErrorBoundary
         showDialog={false}
-        fallback={({ error, resetError }: { error: Error; resetError: () => void }) => (
+        fallback={({ error, resetError }: { error: any; resetError: () => void }) => (
           <div className="flex flex-col items-center justify-center p-6 rounded-lg border border-devonz-elements-borderColor bg-devonz-elements-background-depth-2 text-center min-h-[200px]">
             <div className="i-ph:warning-circle-duotone text-4xl text-devonz-elements-button-danger-text mb-4" />
             <h3 className="text-lg font-medium text-devonz-elements-textPrimary mb-2">Application Error</h3>

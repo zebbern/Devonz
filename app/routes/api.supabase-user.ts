@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, type ActionFunctionArgs, json } from 'react-router';
+import { type LoaderFunctionArgs, type ActionFunctionArgs } from 'react-router';
 import { ApiError, resolveToken, unauthorizedResponse, externalFetch, handleApiError } from '~/lib/api/apiUtils';
 import { getApiKeysFromCookie } from '~/lib/api/cookies';
 import { withSecurity } from '~/lib/security';
@@ -21,11 +21,15 @@ async function supabaseUserLoader({ request, context }: LoaderFunctionArgs) {
     if (!token) {
       const cookieHeader = request.headers.get('Cookie');
       const apiKeys = getApiKeysFromCookie(cookieHeader);
-      const envUrl = apiKeys.VITE_SUPABASE_URL || context?.cloudflare?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-      const envAnonKey = apiKeys.VITE_SUPABASE_ANON_KEY || context?.cloudflare?.env?.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+      const envUrl =
+        apiKeys.VITE_SUPABASE_URL || context?.cloudflare?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+      const envAnonKey =
+        apiKeys.VITE_SUPABASE_ANON_KEY ||
+        context?.cloudflare?.env?.VITE_SUPABASE_ANON_KEY ||
+        process.env.VITE_SUPABASE_ANON_KEY;
 
       if (envUrl && envAnonKey) {
-        return json({
+        return Response.json({
           user: {
             id: 'local',
             name: 'Local Supabase User',
@@ -96,12 +100,16 @@ async function supabaseUserAction({ request, context }: ActionFunctionArgs) {
     if (!token) {
       const cookieHeader = request.headers.get('Cookie');
       const apiKeys = getApiKeysFromCookie(cookieHeader);
-      const envUrl = apiKeys.VITE_SUPABASE_URL || context?.cloudflare?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-      const envAnonKey = apiKeys.VITE_SUPABASE_ANON_KEY || context?.cloudflare?.env?.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+      const envUrl =
+        apiKeys.VITE_SUPABASE_URL || context?.cloudflare?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+      const envAnonKey =
+        apiKeys.VITE_SUPABASE_ANON_KEY ||
+        context?.cloudflare?.env?.VITE_SUPABASE_ANON_KEY ||
+        process.env.VITE_SUPABASE_ANON_KEY;
 
       if (envUrl && envAnonKey) {
         if (action === 'get_projects') {
-          return json({
+          return Response.json({
             user: { id: 'local', name: 'Local Supabase User', email: 'local@supabase.local' },
             stats: {
               projects: [
@@ -120,7 +128,7 @@ async function supabaseUserAction({ request, context }: ActionFunctionArgs) {
         }
 
         if (action === 'get_api_keys') {
-          return json({
+          return Response.json({
             apiKeys: [
               { name: 'anon', api_key: envAnonKey },
               { name: 'service_role', api_key: 'local-service-role' },

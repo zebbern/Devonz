@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useStore } from '@nanostores/react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { motion } from 'framer-motion';
@@ -8,7 +8,7 @@ import type { TabType } from '~/components/@settings/core/types';
 import { ControlPanel } from '~/components/@settings/core/ControlPanel';
 import { authStore, clearAuth } from '~/lib/stores/auth';
 import { supabase } from '~/lib/supabase.client';
-import { Link, useNavigate } from '@remix-run/react';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
 export function HeaderAvatar() {
@@ -26,7 +26,11 @@ export function HeaderAvatar() {
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+
+      if (error) {
+        throw error;
+      }
+
       clearAuth();
       toast.success('Successfully logged out');
       navigate('/login');

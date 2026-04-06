@@ -55,7 +55,6 @@ export const DeployButton = ({
   const [gitlabDeploymentFiles, setGitlabDeploymentFiles] = useState<Record<string, string> | null>(null);
   const [githubProjectName, setGithubProjectName] = useState('');
   const [gitlabProjectName, setGitlabProjectName] = useState('');
-  const [gitlabProjectId, setGitlabProjectId] = useState('');
 
   const handleVercelDeployClick = async () => {
     setIsDeploying(true);
@@ -124,7 +123,7 @@ export const DeployButton = ({
         if (result && result.success && result.files) {
           setGitlabDeploymentFiles(result.files);
           setGitlabProjectName(result.projectName);
-          setGitlabProjectId(result.projectId);
+
           setShowGitLabDeploymentDialog(true);
         }
       }
@@ -329,7 +328,6 @@ export const DeployButton = ({
             onClose={() => setShowGitLabDeploymentDialog(false)}
             projectName={gitlabProjectName}
             files={gitlabDeploymentFiles}
-            projectId={gitlabProjectId}
           />
         </Suspense>
       )}
