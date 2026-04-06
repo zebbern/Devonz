@@ -121,6 +121,14 @@ const FeatureSection = memo(
 export default function FeaturesTab() {
   const [activeSection, setActiveSection] = useState<FeatureTabSection>('core');
 
+  // Check env variable for Prompt Library visibility
+  const showPromptLibrary = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SHOW_FEATURE_PROMPTS === 'true' : false;
+
+  const visibleTabSections = featureTabSections.filter(tab => {
+    if (tab.id === 'prompts' && !showPromptLibrary) return false;
+    return true;
+  });
+
   const {
     autoSelectTemplate,
     isLatestBranch,
@@ -425,7 +433,7 @@ export default function FeaturesTab() {
     <div className="flex flex-col">
       {/* Tab Navigation */}
       <div className="flex gap-2 border-b border-devonz-elements-borderColor pb-2 mb-6">
-        {featureTabSections.map((tab) => (
+        {visibleTabSections.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveSection(tab.id)}
