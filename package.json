@@ -125,7 +125,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
-    "react-qrcode-logo": "^3.0.0",
+    "react-qrcode-logo": "^4.0.0",
     "react-resizable-panels": "^2.1.7",
     "react-router": "^7.0.0",
     "react-window": "^2.2.7",
