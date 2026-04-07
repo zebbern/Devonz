@@ -126,7 +126,7 @@
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
     "react-qrcode-logo": "^3.0.0",
-    "react-resizable-panels": "^2.1.7",
+    "react-resizable-panels": "^4.9.0",
     "react-router": "^7.0.0",
     "react-window": "^2.2.7",
     "rehype-raw": "^7.0.0",
