@@ -92,7 +92,7 @@
     "@sentry/react": "^10.43.0",
     "@sentry/vite-plugin": "^5.1.1",
     "@uiw/codemirror-theme-vscode": "^4.25.8",
-    "@unocss/reset": "^0.61.9",
+    "@unocss/reset": "^66.6.8",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-web-links": "^0.11.0",
     "@xterm/xterm": "^5.5.0",
