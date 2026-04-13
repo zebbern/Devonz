@@ -162,7 +162,7 @@
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^2.0.0",
-    "drizzle-kit": "^0.31.9",
+    "drizzle-kit": "^0.31.10",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.5.5",
     "husky": "9.1.7",
